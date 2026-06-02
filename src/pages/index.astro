@@ -7,9 +7,9 @@ import { SITE_TITLE } from '../consts';
 	<main>
 		<h1 class="name">{SITE_TITLE}</h1>
 		<nav>
-			<a class="word" href="/play">play</a>
-			<a class="word" href="/look">look</a>
 			<a class="word" href="/read">read</a>
+			<a class="word" href="/look">look</a>
+			<a class="word" href="/lab">lab</a>
 		</nav>
 	</main>
 </Layout>
@@ -39,7 +39,7 @@ import { SITE_TITLE } from '../consts';
 	nav a {
 		font-size: 0.9375rem;
 		color: var(--muted);
-		transition: color 0.2s ease;
+		transition: color var(--anim-dur) var(--anim-ease);
 	}
 	nav a:hover {
 		color: var(--fg);

@@ -8,13 +8,13 @@ const projects = (await getCollection('projects')).sort(
 );
 ---
 
-<Layout title="play · Joel Acosta">
+<Layout title="lab · Joel Acosta">
 	<main>
 		<ul>
 			{
 				projects.map((p) => (
 					<li>
-						<a href={`/play/${p.id}/`}>
+						<a href={`/lab/${p.id}/`}>
 							<Image class="thumb" width={640} height={360} src={p.data.thumbnail} alt="" />
 							<span class="t">{p.data.title}</span>
 						</a>
@@ -49,7 +49,7 @@ const projects = (await getCollection('projects')).sort(
 		object-fit: cover;
 		border-radius: 4px;
 		opacity: 0.9;
-		transition: opacity 0.25s ease;
+		transition: opacity var(--anim-dur) var(--anim-ease);
 	}
 	li a:hover .thumb {
 		opacity: 1;
@@ -59,7 +59,7 @@ const projects = (await getCollection('projects')).sort(
 		margin-top: 0.7em;
 		font-size: 0.8125rem;
 		color: var(--muted);
-		transition: color 0.2s ease;
+		transition: color var(--anim-dur) var(--anim-ease);
 	}
 	li a:hover .t {
 		color: var(--fg);

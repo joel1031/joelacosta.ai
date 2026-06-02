@@ -1,0 +1,189 @@
+---
+// Reusable click-to-expand overlay.
+// Trigger by giving any element `data-zoom-src="<image url>"`.
+// Images inside `.prose` and the post hero are auto-enhanced.
+---
+
+<div id="lightbox" class="lightbox" hidden>
+	<button class="close" type="button" aria-label="Close">×</button>
+	<img id="lightbox-img" src="" alt="" />
+</div>
+
+<style>
+	.lightbox {
+		position: fixed;
+		inset: 0;
+		z-index: 50;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 4vh 4vw;
+		background: rgba(0, 0, 0, 0.92);
+		cursor: pointer;
+	}
+	.lightbox[hidden] {
+		display: none;
+	}
+	/* Entry animation, runs each time the overlay is shown. */
+	.lightbox:not([hidden]) {
+		animation: lb-fade var(--anim-dur) var(--anim-ease) both;
+	}
+	.lightbox:not([hidden]) img {
+		animation: lb-zoom var(--anim-dur) var(--anim-ease) both;
+	}
+	/* Exit animation (distinct names so the animation restarts and fires animationend). */
+	.lightbox.closing {
+		animation: lb-fade-out var(--anim-dur) var(--anim-ease) both;
+	}
+	.lightbox.closing img {
+		animation: lb-zoom-out var(--anim-dur) var(--anim-ease) both;
+	}
+	@keyframes lb-fade {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+	@keyframes lb-zoom {
+		from {
+			opacity: 0;
+			transform: scale(0.96);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+	@keyframes lb-fade-out {
+		from {
+			opacity: 1;
+		}
+		to {
+			opacity: 0;
+		}
+	}
+	@keyframes lb-zoom-out {
+		from {
+			opacity: 1;
+			transform: none;
+		}
+		to {
+			opacity: 0;
+			transform: scale(0.96);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.lightbox:not([hidden]),
+		.lightbox:not([hidden]) img,
+		.lightbox.closing,
+		.lightbox.closing img {
+			animation: none;
+		}
+	}
+	.lightbox img {
+		max-width: 100%;
+		max-height: 92vh;
+		width: auto;
+		height: auto;
+		border-radius: 4px;
+		cursor: default;
+	}
+	.lightbox .close {
+		position: absolute;
+		top: 1rem;
+		right: 1.2rem;
+		font-size: 1.8rem;
+		line-height: 1;
+		color: #fff;
+		background: none;
+		border: none;
+		cursor: pointer;
+		opacity: 0.6;
+	}
+	.lightbox .close:hover {
+		opacity: 1;
+	}
+</style>
+
+<script>
+	const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const box = () => document.getElementById('lightbox') as HTMLElement | null;
+	const boxImg = () => document.getElementById('lightbox-img') as HTMLImageElement | null;
+
+	// Mark post images as zoomable (idempotent, re-run after navigation).
+	function enhance() {
+		document
+			.querySelectorAll<HTMLImageElement>('.prose img, .hero img')
+			.forEach((img) => {
+				if (!img.dataset.zoomSrc) {
+					img.dataset.zoomSrc = img.currentSrc || img.src;
+					img.style.cursor = 'pointer';
+				}
+			});
+	}
+
+	const open = (src: string) => {
+		const b = box();
+		const bi = boxImg();
+		if (!b || !bi || !src) return;
+		b.classList.remove('closing');
+		bi.src = src;
+		b.hidden = false;
+		document.body.style.overflow = 'hidden';
+	};
+	const finalize = () => {
+		const b = box();
+		const bi = boxImg();
+		if (!b) return;
+		b.hidden = true;
+		b.classList.remove('closing');
+		if (bi) bi.src = '';
+		document.body.style.overflow = '';
+	};
+	const close = () => {
+		const b = box();
+		if (!b || b.hidden || b.classList.contains('closing')) return;
+		if (reduce) {
+			finalize();
+			return;
+		}
+		b.classList.add('closing');
+		let done = false;
+		const end = () => {
+			if (done) return;
+			done = true;
+			b.removeEventListener('animationend', onEnd);
+			clearTimeout(fallback);
+			finalize();
+		};
+		const onEnd = (e: AnimationEvent) => {
+			if (e.target !== b) return; // wait for the overlay's own animation
+			end();
+		};
+		b.addEventListener('animationend', onEnd);
+		// Safety net: never let the overlay get stuck if animationend doesn't fire.
+		const fallback = setTimeout(end, 600);
+	};
+
+	// Delegated so it works for any trigger and survives view-transition navigations.
+	document.addEventListener('click', (e) => {
+		const target = e.target as HTMLElement;
+		const trigger = target.closest<HTMLElement>('[data-zoom-src]');
+		if (trigger) {
+			open(trigger.dataset.zoomSrc || '');
+			return;
+		}
+		const b = box();
+		if (b && !b.hidden && target.closest('#lightbox') && e.target !== boxImg()) {
+			close(); // backdrop or close button
+		}
+	});
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape') close();
+	});
+
+	enhance();
+	document.addEventListener('astro:page-load', enhance);
+</script>

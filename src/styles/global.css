@@ -10,19 +10,27 @@
 	--muted: #8a8a8a;
 	--faint: #3a3a3a;
 	--line: #1c1c1c;
+	/* Header underline: original subtle line in dark mode. */
+	--header-line: var(--line);
 }
 
 :root[data-theme='light'] {
 	--bg: #f7f7f5;
-	--fg: #1a1a1a;
-	--muted: #6a6a6a;
-	--faint: #c8c8c4;
-	--line: #e2e2de;
+	--fg: #141414;
+	--muted: #3f3f3f;
+	--faint: #7c7c78;
+	--line: #c3c3bc;
+	/* Header underline: matches the text in light mode. */
+	--header-line: var(--fg);
 }
 
 :root {
 	/* Shared content container width for play / look / read. */
 	--content-width: 1200px;
+
+	/* One motion vocabulary, used for hover, the lightbox, and page transitions. */
+	--anim-dur: 0.4s;
+	--anim-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 * {
@@ -82,6 +90,42 @@ p {
 	letter-spacing: 0.18em;
 }
 
+/* Reusable CSS-native parallax: a fixed box clips the image, which is scaled
+   up and translated as it scrolls through the viewport. Set --parallax-offset
+   (travel %) and an aspect-ratio on the .parallax container. */
+.parallax {
+	overflow: hidden;
+	border-radius: 4px;
+	view-timeline-name: --parallax-tl;
+	view-timeline-axis: block;
+}
+.parallax img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	object-fit: cover;
+	scale: calc(1 + var(--parallax-offset, 12) * 2 / 100);
+	animation: parallax-scroll auto linear both;
+	animation-timeline: --parallax-tl;
+	animation-range: cover;
+	will-change: translate;
+}
+@keyframes parallax-scroll {
+	from {
+		translate: 0 calc(var(--parallax-offset, 12) * -1%);
+	}
+	to {
+		translate: 0 calc(var(--parallax-offset, 12) * 1%);
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.parallax img {
+		animation: none;
+		scale: 1;
+	}
+}
+
 .sr-only {
 	border: 0;
 	padding: 0;
@@ -93,4 +137,44 @@ p {
 	clip: rect(1px, 1px, 1px, 1px);
 	clip-path: inset(50%);
 	white-space: nowrap;
+}
+
+/* Page transitions (Astro ClientRouter): same fade + subtle zoom as the lightbox. */
+@keyframes page-in {
+	from {
+		opacity: 0;
+		transform: scale(0.97);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+@keyframes page-out {
+	from {
+		opacity: 1;
+		transform: none;
+	}
+	to {
+		opacity: 0;
+		transform: scale(0.97);
+	}
+}
+::view-transition-old(root) {
+	animation: var(--anim-dur) var(--anim-ease) both page-out;
+}
+::view-transition-new(root) {
+	animation: var(--anim-dur) var(--anim-ease) both page-in;
+}
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-old(root),
+	::view-transition-new(root) {
+		animation: none;
+	}
+}
+/* The header is its own group and does not animate — it stays still. */
+::view-transition-group(site-header),
+::view-transition-old(site-header),
+::view-transition-new(site-header) {
+	animation: none;
 }

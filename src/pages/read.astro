@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import FormattedDate from '../components/FormattedDate.astro';
 import Layout from '../layouts/Layout.astro';
@@ -15,10 +16,15 @@ const posts = (await getCollection('blog')).sort(
 				posts.map((post) => (
 					<li>
 						<a href={`/read/${post.id}/`}>
-							<span class="t">{post.data.title}</span>
-							<span class="d">
-								<FormattedDate date={post.data.pubDate} />
+							<span class="meta">
+								<span class="t">{post.data.title}</span>
+								<span class="d">
+									<FormattedDate date={post.data.pubDate} />
+								</span>
 							</span>
+							{post.data.heroImage && (
+								<Image class="thumb" width={192} height={120} src={post.data.heroImage} alt="" />
+							)}
 						</a>
 					</li>
 				))
@@ -42,15 +48,21 @@ const posts = (await getCollection('blog')).sort(
 	li a {
 		display: flex;
 		justify-content: space-between;
-		align-items: baseline;
+		align-items: center;
 		gap: 1.5em;
 		padding: 1.1em 0;
 		border-bottom: 1px solid var(--line);
 	}
+	.meta {
+		display: flex;
+		align-items: baseline;
+		gap: 1em;
+		min-width: 0;
+	}
 	.t {
 		font-size: 0.9375rem;
 		color: var(--muted);
-		transition: color 0.2s ease;
+		transition: color var(--anim-dur) var(--anim-ease);
 	}
 	li a:hover .t {
 		color: var(--fg);
@@ -61,5 +73,23 @@ const posts = (await getCollection('blog')).sort(
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
 		color: var(--faint);
+	}
+	.thumb {
+		flex-shrink: 0;
+		width: 96px;
+		height: 60px;
+		object-fit: cover;
+		border-radius: 3px;
+		opacity: 0.85;
+		transition: opacity var(--anim-dur) var(--anim-ease);
+	}
+	li a:hover .thumb {
+		opacity: 1;
+	}
+	@media (max-width: 560px) {
+		.thumb {
+			width: 72px;
+			height: 46px;
+		}
 	}
 </style>

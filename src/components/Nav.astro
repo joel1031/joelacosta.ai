@@ -3,14 +3,14 @@ import { SITE_TITLE } from '../consts';
 
 const path = Astro.url.pathname;
 const tabs = [
-	{ href: '/play', label: 'play' },
-	{ href: '/look', label: 'look' },
 	{ href: '/read', label: 'read' },
+	{ href: '/look', label: 'look' },
+	{ href: '/lab', label: 'lab' },
 ];
 const isActive = (href: string) => path === href || path.startsWith(href + '/');
 ---
 
-<header>
+<header transition:name="site-header">
 	<a class="name word" href="/about">{SITE_TITLE}</a>
 	<nav>
 		{
@@ -33,12 +33,13 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
 		align-items: center;
 		gap: 0.9em;
 		padding: 2.2em 1em 1.8em;
-		border-bottom: 1px solid var(--line);
+		border-bottom: 1px solid var(--header-line);
 		position: relative;
 	}
 	.name {
 		font-size: 0.8125rem;
 		color: var(--muted);
+		transition: color var(--anim-dur) var(--anim-ease);
 	}
 	.name:hover {
 		color: var(--fg);
@@ -50,7 +51,7 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
 	nav a {
 		font-size: 0.8125rem;
 		color: var(--faint);
-		transition: color 0.2s ease;
+		transition: color var(--anim-dur) var(--anim-ease);
 	}
 	nav a:hover {
 		color: var(--muted);
@@ -77,7 +78,7 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
 		height: 0.7em;
 		border-radius: 50%;
 		border: 1px solid var(--muted);
-		transition: background 0.2s ease, border-color 0.2s ease;
+		transition: background var(--anim-dur) var(--anim-ease), border-color var(--anim-dur) var(--anim-ease);
 	}
 	/* Filled dot in dark mode (tap for light), hollow in light mode. */
 	:global(html[data-theme='dark']) #theme-toggle span {
@@ -95,8 +96,10 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
 </style>
 
 <script>
-	const btn = document.getElementById('theme-toggle');
-	btn?.addEventListener('click', () => {
+	// Delegated so it keeps working across client-side (view transition) navigations.
+	document.addEventListener('click', (e) => {
+		const target = e.target as HTMLElement;
+		if (!target.closest('#theme-toggle')) return;
 		const root = document.documentElement;
 		const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
 		root.setAttribute('data-theme', next);
