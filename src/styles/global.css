@@ -119,6 +119,19 @@ p {
 		translate: 0 calc(var(--parallax-offset, 12) * 1%);
 	}
 }
+/* Post images: only ever drift upward as they scroll through view. */
+.hero img,
+.prose .parallax img {
+	animation-name: parallax-up;
+}
+@keyframes parallax-up {
+	from {
+		translate: 0 0;
+	}
+	to {
+		translate: 0 calc(var(--parallax-offset, 12) * -1%);
+	}
+}
 @media (prefers-reduced-motion: reduce) {
 	.parallax img {
 		animation: none;
