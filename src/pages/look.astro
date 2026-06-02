@@ -1,0 +1,93 @@
+---
+import { getImage, Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Lightbox from '../components/Lightbox.astro';
+import Layout from '../layouts/Layout.astro';
+
+const images = import.meta.glob<{ default: ImageMetadata }>(
+	'../assets/gallery/*.{jpg,jpeg,png,webp,avif}',
+	{ eager: true },
+);
+const sources = Object.entries(images)
+	.sort(([a], [b]) => a.localeCompare(b))
+	.map(([, mod]) => mod.default);
+
+// Full-size variant for the lightbox.
+const gallery = await Promise.all(
+	sources.map(async (src) => ({
+		src,
+		full: (await getImage({ src, width: 1800 })).src,
+	})),
+);
+
+// Parallax travel per tile (%). Vary a little for depth.
+const offsets = [12, 18, 15, 20, 14];
+---
+
+<Layout title="look · Joel Acosta">
+	<main>
+		<div class="masonry">
+			{
+				gallery.map((g, i) => (
+					<button class="item" type="button" data-zoom-src={g.full} aria-label="Expand image">
+						<div
+							class="parallax"
+							style={`aspect-ratio:${g.src.width} / ${g.src.height}; --parallax-offset:${offsets[i % offsets.length]}`}
+						>
+							<Image src={g.src} alt="" widths={[500, 1000]} sizes="(max-width: 560px) 92vw, 33vw" />
+						</div>
+					</button>
+				))
+			}
+		</div>
+	</main>
+
+	<Lightbox />
+</Layout>
+
+<style>
+	main {
+		width: var(--content-width);
+		max-width: calc(100% - 2em);
+		margin: 0 auto;
+		padding: 2.5em 0 8em;
+	}
+	.masonry {
+		--gap: 0.9rem;
+		columns: 3;
+		column-gap: var(--gap);
+	}
+	.item {
+		display: block;
+		width: 100%;
+		break-inside: avoid;
+		margin: 0 0 var(--gap);
+		padding: 0;
+		border: none;
+		background: none;
+		cursor: pointer;
+	}
+
+	/* Parallax itself is the global .parallax utility; gallery only tweaks opacity. */
+	.parallax {
+		width: 100%;
+	}
+	.parallax :global(img) {
+		opacity: 0.92;
+		transition: opacity var(--anim-dur) var(--anim-ease);
+	}
+	.item:hover .parallax :global(img) {
+		opacity: 1;
+	}
+
+	@media (max-width: 1024px) {
+		.masonry {
+			columns: 2;
+		}
+	}
+	@media (max-width: 560px) {
+		.masonry {
+			columns: 1;
+		}
+	}
+</style>

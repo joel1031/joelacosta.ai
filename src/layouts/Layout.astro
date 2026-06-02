@@ -1,0 +1,49 @@
+---
+import type { ImageMetadata } from 'astro';
+import { ClientRouter } from 'astro:transitions';
+import BaseHead from '../components/BaseHead.astro';
+import Nav from '../components/Nav.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+interface Props {
+	title?: string;
+	description?: string;
+	image?: ImageMetadata;
+	nav?: boolean;
+}
+
+const {
+	title = SITE_TITLE,
+	description = SITE_DESCRIPTION,
+	image,
+	nav = true,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={title} description={description} image={image} />
+		<ClientRouter />
+		<script is:inline>
+			// Set theme before paint to avoid a flash. Default: dark.
+			// Re-applied after view-transition swaps, which reset <html> attributes.
+			(function () {
+				function apply() {
+					try {
+						var t = localStorage.getItem('theme');
+						document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark');
+					} catch (e) {
+						document.documentElement.setAttribute('data-theme', 'dark');
+					}
+				}
+				apply();
+				document.addEventListener('astro:after-swap', apply);
+			})();
+		</script>
+	</head>
+	<body>
+		{nav && <Nav />}
+		<slot />
+	</body>
+</html>

@@ -1,0 +1,95 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import FormattedDate from '../components/FormattedDate.astro';
+import Layout from '../layouts/Layout.astro';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<Layout title="read · Joel Acosta">
+	<main>
+		<ul>
+			{
+				posts.map((post) => (
+					<li>
+						<a href={`/read/${post.id}/`}>
+							<span class="meta">
+								<span class="t">{post.data.title}</span>
+								<span class="d">
+									<FormattedDate date={post.data.pubDate} />
+								</span>
+							</span>
+							{post.data.heroImage && (
+								<Image class="thumb" width={192} height={120} src={post.data.heroImage} alt="" />
+							)}
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</main>
+</Layout>
+
+<style>
+	main {
+		width: var(--content-width);
+		max-width: calc(100% - 2.5em);
+		margin: 0 auto;
+		padding: 2.5em 0 6em;
+	}
+	ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	li a {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 1.5em;
+		padding: 1.1em 0;
+		border-bottom: 1px solid var(--line);
+	}
+	.meta {
+		display: flex;
+		align-items: baseline;
+		gap: 1em;
+		min-width: 0;
+	}
+	.t {
+		font-size: 0.9375rem;
+		color: var(--muted);
+		transition: color var(--anim-dur) var(--anim-ease);
+	}
+	li a:hover .t {
+		color: var(--fg);
+	}
+	.d {
+		flex-shrink: 0;
+		font-size: 0.6875rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--faint);
+	}
+	.thumb {
+		flex-shrink: 0;
+		width: 96px;
+		height: 60px;
+		object-fit: cover;
+		border-radius: 3px;
+		opacity: 0.85;
+		transition: opacity var(--anim-dur) var(--anim-ease);
+	}
+	li a:hover .thumb {
+		opacity: 1;
+	}
+	@media (max-width: 560px) {
+		.thumb {
+			width: 72px;
+			height: 46px;
+		}
+	}
+</style>
