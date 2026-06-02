@@ -1,0 +1,112 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import Layout from './Layout.astro';
+
+interface Props {
+	title: string;
+	description: string;
+	pubDate: Date;
+	updatedDate?: Date;
+	heroImage?: ImageMetadata;
+}
+
+const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+---
+
+<Layout title={title} description={description} image={heroImage}>
+	<main>
+		<article>
+			<header class="head">
+				<p class="date">
+					<FormattedDate date={pubDate} />
+					{updatedDate && <span class="updated">· updated <FormattedDate date={updatedDate} /></span>}
+				</p>
+				<h1>{title}</h1>
+			</header>
+			{heroImage && <Image class="hero" width={1020} height={510} src={heroImage} alt="" />}
+			<div class="prose">
+				<slot />
+			</div>
+		</article>
+	</main>
+</Layout>
+
+<style>
+	main {
+		width: 680px;
+		max-width: calc(100% - 2.5em);
+		margin: 0 auto;
+		padding: 3.5em 0 6em;
+	}
+	.head {
+		margin-bottom: 2em;
+	}
+	.date {
+		font-size: 0.75rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--muted);
+		margin: 0 0 0.8em 0;
+	}
+	.updated {
+		font-style: italic;
+	}
+	h1 {
+		font-size: 1.75rem;
+		font-weight: 500;
+		margin: 0;
+	}
+	.hero {
+		width: 100%;
+		border-radius: 4px;
+		margin-bottom: 2em;
+	}
+	.prose :global(p) {
+		color: var(--fg);
+	}
+	.prose :global(a) {
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		text-decoration-color: var(--faint);
+	}
+	.prose :global(a:hover) {
+		text-decoration-color: var(--fg);
+	}
+	.prose :global(img) {
+		border-radius: 4px;
+		margin: 1.5em 0;
+	}
+	.prose :global(h2),
+	.prose :global(h3) {
+		margin-top: 1.6em;
+	}
+	.prose :global(blockquote) {
+		border-left: 2px solid var(--faint);
+		padding-left: 1em;
+		margin: 1.5em 0;
+		color: var(--muted);
+	}
+	.prose :global(code) {
+		background: var(--line);
+		padding: 0.1em 0.35em;
+		border-radius: 3px;
+		font-size: 0.9em;
+	}
+	.prose :global(pre) {
+		background: var(--line);
+		padding: 1.2em;
+		border-radius: 4px;
+		overflow-x: auto;
+	}
+	.prose :global(pre code) {
+		background: none;
+		padding: 0;
+	}
+	.prose :global(hr) {
+		border: none;
+		border-top: 1px solid var(--line);
+		margin: 2em 0;
+	}
+</style>

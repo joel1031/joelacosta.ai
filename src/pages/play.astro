@@ -1,0 +1,78 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const projects = (await getCollection('projects')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<Layout title="play · Joel Acosta">
+	<main>
+		<ul>
+			{
+				projects.map((p) => (
+					<li>
+						<a href={`/play/${p.id}/`}>
+							<Image class="thumb" width={640} height={360} src={p.data.thumbnail} alt="" />
+							<span class="t">{p.data.title}</span>
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</main>
+</Layout>
+
+<style>
+	main {
+		width: var(--content-width);
+		max-width: calc(100% - 2.5em);
+		margin: 0 auto;
+		padding: 2.5em 0 6em;
+	}
+	ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1.6em;
+	}
+	li a {
+		display: block;
+	}
+	.thumb {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		object-fit: cover;
+		border-radius: 4px;
+		opacity: 0.9;
+		transition: opacity 0.25s ease;
+	}
+	li a:hover .thumb {
+		opacity: 1;
+	}
+	.t {
+		display: block;
+		margin-top: 0.7em;
+		font-size: 0.8125rem;
+		color: var(--muted);
+		transition: color 0.2s ease;
+	}
+	li a:hover .t {
+		color: var(--fg);
+	}
+	@media (max-width: 900px) {
+		ul {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+	@media (max-width: 600px) {
+		ul {
+			grid-template-columns: 1fr;
+			gap: 1.8em;
+		}
+	}
+</style>

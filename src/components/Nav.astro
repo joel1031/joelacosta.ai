@@ -1,0 +1,107 @@
+---
+import { SITE_TITLE } from '../consts';
+
+const path = Astro.url.pathname;
+const tabs = [
+	{ href: '/play', label: 'play' },
+	{ href: '/look', label: 'look' },
+	{ href: '/read', label: 'read' },
+];
+const isActive = (href: string) => path === href || path.startsWith(href + '/');
+---
+
+<header>
+	<a class="name word" href="/about">{SITE_TITLE}</a>
+	<nav>
+		{
+			tabs.map((t) => (
+				<a class:list={['word', { on: isActive(t.href) }]} href={t.href}>
+					{t.label}
+				</a>
+			))
+		}
+	</nav>
+	<button id="theme-toggle" type="button" aria-label="Toggle color theme">
+		<span aria-hidden="true"></span>
+	</button>
+</header>
+
+<style>
+	header {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.9em;
+		padding: 2.2em 1em 1.8em;
+		border-bottom: 1px solid var(--line);
+		position: relative;
+	}
+	.name {
+		font-size: 0.8125rem;
+		color: var(--muted);
+	}
+	.name:hover {
+		color: var(--fg);
+	}
+	nav {
+		display: flex;
+		gap: 1.9em;
+	}
+	nav a {
+		font-size: 0.8125rem;
+		color: var(--faint);
+		transition: color 0.2s ease;
+	}
+	nav a:hover {
+		color: var(--muted);
+	}
+	nav a.on {
+		color: var(--fg);
+	}
+	#theme-toggle {
+		position: absolute;
+		top: 1.6em;
+		right: 1.2em;
+		width: 1.4em;
+		height: 1.4em;
+		padding: 0;
+		border: none;
+		background: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	#theme-toggle span {
+		width: 0.7em;
+		height: 0.7em;
+		border-radius: 50%;
+		border: 1px solid var(--muted);
+		transition: background 0.2s ease, border-color 0.2s ease;
+	}
+	/* Filled dot in dark mode (tap for light), hollow in light mode. */
+	:global(html[data-theme='dark']) #theme-toggle span {
+		background: var(--muted);
+	}
+	#theme-toggle:hover span {
+		border-color: var(--fg);
+	}
+	@media (max-width: 600px) {
+		#theme-toggle {
+			top: 1.2em;
+			right: 1em;
+		}
+	}
+</style>
+
+<script>
+	const btn = document.getElementById('theme-toggle');
+	btn?.addEventListener('click', () => {
+		const root = document.documentElement;
+		const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+		root.setAttribute('data-theme', next);
+		try {
+			localStorage.setItem('theme', next);
+		} catch {}
+	});
+</script>
