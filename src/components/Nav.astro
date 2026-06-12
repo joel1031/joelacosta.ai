@@ -11,8 +11,8 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
 ---
 
 <header transition:name="site-header">
-	<a class="name word" href="/about">{SITE_TITLE}</a>
-	<nav>
+	<a class="name word" href="/" transition:name="brand-name">{SITE_TITLE}</a>
+	<nav transition:name="brand-tabs">
 		{
 			tabs.map((t) => (
 				<a class:list={['word', { on: isActive(t.href) }]} href={t.href}>

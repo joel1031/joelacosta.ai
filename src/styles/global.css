@@ -31,6 +31,8 @@
 	/* One motion vocabulary, used for hover, the lightbox, and page transitions. */
 	--anim-dur: 0.4s;
 	--anim-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+	/* Slower, unhurried duration for page navigation morphs. */
+	--morph-dur: 0.85s;
 }
 
 * {
@@ -174,10 +176,10 @@ p {
 	}
 }
 ::view-transition-old(root) {
-	animation: var(--anim-dur) var(--anim-ease) both page-out;
+	animation: var(--morph-dur) var(--anim-ease) both page-out;
 }
 ::view-transition-new(root) {
-	animation: var(--anim-dur) var(--anim-ease) both page-in;
+	animation: var(--morph-dur) var(--anim-ease) both page-in;
 }
 @media (prefers-reduced-motion: reduce) {
 	::view-transition-old(root),
@@ -190,4 +192,24 @@ p {
 ::view-transition-old(site-header),
 ::view-transition-new(site-header) {
 	animation: none;
+}
+/* The name and tabs morph (move + resize) between the home hero and the header. */
+::view-transition-group(brand-name),
+::view-transition-group(brand-tabs),
+::view-transition-old(brand-name),
+::view-transition-new(brand-name),
+::view-transition-old(brand-tabs),
+::view-transition-new(brand-tabs) {
+	animation-duration: var(--morph-dur);
+	animation-timing-function: var(--anim-ease);
+}
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-group(brand-name),
+	::view-transition-group(brand-tabs),
+	::view-transition-old(brand-name),
+	::view-transition-new(brand-name),
+	::view-transition-old(brand-tabs),
+	::view-transition-new(brand-tabs) {
+		animation: none;
+	}
 }

@@ -5,7 +5,7 @@ import Lightbox from '../components/Lightbox.astro';
 import Layout from '../layouts/Layout.astro';
 
 const images = import.meta.glob<{ default: ImageMetadata }>(
-	'../assets/gallery/*.{jpg,jpeg,png,webp,avif}',
+	'../assets/gallery/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP,AVIF}',
 	{ eager: true },
 );
 const sources = Object.entries(images)
