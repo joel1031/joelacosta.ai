@@ -15,7 +15,15 @@ const projects = (await getCollection('projects')).sort(
 				projects.map((p) => (
 					<li>
 						<a href={`/lab/${p.id}/`}>
-							<Image class="thumb" width={640} height={360} src={p.data.thumbnail} alt="" />
+							<Image
+								class="thumb"
+								width={640}
+								height={360}
+								widths={[640, 1280]}
+								sizes="(max-width: 600px) calc(100vw - 2.5em), (max-width: 900px) 50vw, 33vw"
+								src={p.data.thumbnail}
+								alt=""
+							/>
 							<span class="t">{p.data.title}</span>
 						</a>
 					</li>

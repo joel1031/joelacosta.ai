@@ -1,0 +1,20 @@
+{
+  "images": [
+    {
+      "name": "l'Albufuerra Sunset",
+      "image": "/src/assets/gallery/images/0/image.JPG"
+    },
+    {
+      "name": "Riverside NYC",
+      "image": "/src/assets/gallery/images/1/image.JPG"
+    },
+    {
+      "name": "Castle Loop Sunset",
+      "image": "/src/assets/gallery/images/2/image.JPEG"
+    },
+    {
+      "name": "Ancestra 蛟 (Jiāo) - Questions to Heaven",
+      "image": "/src/assets/gallery/images/3/image.JPG"
+    }
+  ]
+}

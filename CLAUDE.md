@@ -14,11 +14,28 @@ with a light/dark toggle.
 
 ## Commands
 
-- `npm run dev` — local dev server
+- `npm run dev` — local dev server **with the Keystatic CMS** at `/keystatic`
 - `npm run build` — production build to `dist/` (type-checks via `astro check` semantics)
 - `npm run preview` — serve the built site
 
 No test suite, linter, or formatter is configured. Node >= 22.12.
+
+## CMS (Keystatic, local-only)
+
+Content is edited through **Keystatic local mode** at `http://localhost:4321/keystatic`
+during `npm run dev`. No auth, nothing hosted — it writes files straight into the repo;
+publishing is still commit + deploy.
+
+- `keystatic.config.ts` (repo root) defines the schema; it must **mirror
+  `src/content.config.ts`** — change both together.
+- The integration is gated: `dev` sets `KEYSTATIC=1`, which enables `react()` + `keystatic()`
+  in `astro.config.mjs`. `astro build` never sees it, keeping the build fully static
+  (unguarded, Keystatic's server routes would demand an adapter).
+- **posts** → `src/content/blog/`, **projects** → `src/content/projects/`; new entries save
+  as `.mdx`. Uploaded images go to `src/assets/blog/` / `src/assets/projects/` with relative
+  `publicPath`s so the zod `image()` helper resolves them.
+- **gallery** is a singleton: an ordered photo list in `src/content/gallery.json`, uploads
+  into `src/assets/gallery/`. See "Images & gallery" below.
 
 ## Config
 
@@ -50,8 +67,6 @@ and both `[...slug].astro` pages use `getStaticPaths()` + `render()`. Frontmatte
 
 - **`blog`** → `src/content/blog/` — `heroImage` is **optional** (`image()`).
 - **`projects`** → `src/content/projects/` — `thumbnail` is **required** (`image()`).
-
-The current posts/projects are placeholder/demo content using `src/assets/blog-placeholder-*.jpg`.
 
 ## Layouts & components
 
@@ -119,13 +134,17 @@ overlay can never get stuck. `/look` tiles pass a large `getImage` variant as `d
 
 ## Images & gallery
 
-Gallery lives in `src/assets/gallery/` and is loaded with `import.meta.glob` (eager) in both
-`look.astro` and `index.astro`, then processed via `astro:assets` (`getImage`/`Image`).
+Gallery photos live under `src/assets/gallery/` (Keystatic stores array uploads in an
+`images/` subfolder and **renames files to their array index** — reordering renames them);
+their **display order** lives in
+`src/content/gallery.json` (managed via the Keystatic gallery singleton — drag to reorder).
+`src/gallery.ts` resolves that list to `ImageMetadata` via `import.meta.glob` (eager) and is
+the single source for both `look.astro` and `index.astro` (processed via `astro:assets`).
 
 - The glob pattern **includes uppercase extensions** (`JPG`, `JPEG`, …) — phone photos are
   uppercase; lowercase-only globs silently drop them.
-- The home hero plays the gallery in a **fixed order** defined by the `order` array in
-  `index.astro` (match by filename without extension), not shuffled. New images fall to the end.
+- Both /look and the home slideshow play in `gallery.json` order; the first entry is the
+  opening hero slide. Files not listed in `gallery.json` are **not shown**.
 
 ## Conventions
 

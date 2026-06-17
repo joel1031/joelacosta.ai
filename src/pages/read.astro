@@ -23,7 +23,14 @@ const posts = (await getCollection('blog')).sort(
 								</span>
 							</span>
 							{post.data.heroImage && (
-								<Image class="thumb" width={192} height={120} src={post.data.heroImage} alt="" />
+								<Image
+									class="thumb"
+									width={192}
+									height={120}
+									densities={[1, 2]}
+									src={post.data.heroImage}
+									alt=""
+								/>
 							)}
 						</a>
 					</li>
