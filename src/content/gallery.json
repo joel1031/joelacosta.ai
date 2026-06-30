@@ -15,6 +15,30 @@
     {
       "name": "Ancestra 蛟 (Jiāo) - Questions to Heaven",
       "image": "/src/assets/gallery/images/3/image.JPG"
+    },
+    {
+      "name": "The rose that grew from the concrete.",
+      "image": "/src/assets/gallery/images/4/image.png"
+    },
+    {
+      "name": "Stewie",
+      "image": "/src/assets/gallery/images/5/image.JPG"
+    },
+    {
+      "name": "Homer",
+      "image": "/src/assets/gallery/images/6/image.JPG"
+    },
+    {
+      "name": "l'Albufuerra",
+      "image": "/src/assets/gallery/images/7/image.JPEG"
+    },
+    {
+      "name": "Sam's Point",
+      "image": "/src/assets/gallery/images/8/image.jpg"
+    },
+    {
+      "name": "Carriage Road Mt.",
+      "image": "/src/assets/gallery/images/9/image.jpg"
     }
   ]
 }

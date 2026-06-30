@@ -117,10 +117,20 @@ const slides = await Promise.all(
 		if (!slides.length) return;
 
 		slides.forEach((s) => s.classList.remove('is-active'));
+		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+		// Shuffle so each visit starts somewhere different (skip when motion is reduced).
+		if (!reduced) {
+			for (let i = slides.length - 1; i > 0; i--) {
+				const j = Math.floor(Math.random() * (i + 1));
+				[slides[i], slides[j]] = [slides[j], slides[i]];
+			}
+		}
+
 		let pos = 0;
 		slides[pos].classList.add('is-active');
 
-		if (slides.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		if (slides.length < 2 || reduced) return;
 		timer = setInterval(() => {
 			slides[pos].classList.remove('is-active');
 			pos = (pos + 1) % slides.length;

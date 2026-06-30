@@ -2,7 +2,10 @@
 import { getImage, Image } from 'astro:assets';
 import Lightbox from '../components/Lightbox.astro';
 import Layout from '../layouts/Layout.astro';
-import { gallery as sources } from '../gallery';
+import { gallery as ordered } from '../gallery';
+
+// /look shows newest first — reverse the canonical gallery.json order.
+const sources = [...ordered].reverse();
 
 // Full-size variant for the lightbox; order comes from gallery.json (Keystatic).
 const gallery = await Promise.all(
