@@ -39,6 +39,10 @@
     {
       "name": "Carriage Road Mt.",
       "image": "/src/assets/gallery/images/9/image.jpg"
+    },
+    {
+      "name": "Birds",
+      "image": "/src/assets/gallery/images/10/image.JPG"
     }
   ]
 }
