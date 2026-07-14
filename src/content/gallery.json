@@ -49,8 +49,16 @@
       "image": "/src/assets/gallery/images/11/image.jpg"
     },
     {
-      "name": "july4",
+      "name": "July 4 2026",
       "image": "/src/assets/gallery/images/12/image.JPG"
+    },
+    {
+      "name": "Osamason 1",
+      "image": "/src/assets/gallery/images/13/image.JPG"
+    },
+    {
+      "name": "Osamason 2",
+      "image": "/src/assets/gallery/images/14/image.JPG"
     }
   ]
 }
