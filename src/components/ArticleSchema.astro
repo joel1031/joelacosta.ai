@@ -1,0 +1,37 @@
+---
+import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
+import { SITE_TITLE } from '../consts';
+
+interface Props {
+	title: string;
+	description: string;
+	pubDate: Date;
+	updatedDate?: Date;
+	image?: ImageMetadata;
+}
+
+const { title, description, pubDate, updatedDate, image } = Astro.props;
+
+// jpeg to match the OG tags — the same variant, not a second copy in another format.
+const img = image
+	? await getImage({ src: image, width: 1200, height: 630, fit: 'cover', format: 'jpeg' })
+	: undefined;
+
+// Mirrors what the page already renders — the title, the date in the byline, the
+// hero. `author` reuses the same name as the Person schema on /work so engines
+// can resolve the two to one identity.
+const article = {
+	'@context': 'https://schema.org',
+	'@type': 'BlogPosting',
+	headline: title,
+	description,
+	datePublished: pubDate.toISOString(),
+	...(updatedDate && { dateModified: updatedDate.toISOString() }),
+	...(img && { image: new URL(img.src, Astro.site).href }),
+	author: { '@type': 'Person', name: SITE_TITLE, url: new URL('/', Astro.site).href },
+	mainEntityOfPage: { '@type': 'WebPage', '@id': new URL(Astro.url.pathname, Astro.site).href },
+};
+---
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(article)} />

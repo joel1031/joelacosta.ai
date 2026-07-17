@@ -1,5 +1,6 @@
 ---
 import { type CollectionEntry, getCollection, render } from 'astro:content';
+import ArticleSchema from '../../components/ArticleSchema.astro';
 import PostLayout from '../../layouts/PostLayout.astro';
 
 export async function getStaticPaths() {
@@ -16,5 +17,6 @@ const { Content } = await render(post);
 ---
 
 <PostLayout {...post.data}>
+	<ArticleSchema {...post.data} image={post.data.heroImage} />
 	<Content />
 </PostLayout>

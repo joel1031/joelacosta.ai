@@ -1,12 +1,7 @@
 ---
-import { SITE_TITLE } from '../consts';
+import { SITE_TITLE, TABS } from '../consts';
 
 const path = Astro.url.pathname;
-const tabs = [
-	{ href: '/read', label: 'read' },
-	{ href: '/look', label: 'look' },
-	{ href: '/lab', label: 'lab' },
-];
 const isActive = (href: string) => path === href || path.startsWith(href + '/');
 ---
 
@@ -14,7 +9,7 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
 	<a class="name word" href="/" transition:name="brand-name">{SITE_TITLE}</a>
 	<nav transition:name="brand-tabs">
 		{
-			tabs.map((t) => (
+			TABS.map((t) => (
 				<a class:list={['word', { on: isActive(t.href) }]} href={t.href}>
 					{t.label}
 				</a>

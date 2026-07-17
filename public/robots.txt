@@ -1,0 +1,25 @@
+# Everything here is meant to be read, by people and machines alike.
+User-agent: *
+Allow: /
+
+# AI crawlers are allowed on purpose, not by omission: being quoted accurately
+# beats not being quoted. Named explicitly so the intent survives a default change.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+Sitemap: https://joelacosta.ai/sitemap-index.xml

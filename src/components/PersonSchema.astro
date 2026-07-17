@@ -1,0 +1,21 @@
+---
+import { SITE_TITLE, SOCIALS } from '../consts';
+
+// Person structured data. `sameAs` is the load-bearing part: it ties this domain
+// to profiles search engines already index, which is how "Joel Acosta" resolves
+// to this site. Everything asserted here is also visible text on /work — schema
+// that contradicts (or invents beyond) the page is a signal engines discard.
+const person = {
+	'@context': 'https://schema.org',
+	'@type': 'Person',
+	name: SITE_TITLE,
+	url: new URL('/', Astro.site).href,
+	jobTitle: 'Full-Stack Engineer',
+	description:
+		"I'm a full-stack engineer with deep experience in building B2B/D2C products and AI systems.",
+	knowsAbout: ['Full-Stack Engineering', 'B2B Products', 'D2C Products', 'AI Systems'],
+	sameAs: SOCIALS.map((s) => s.href),
+};
+---
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(person)} />

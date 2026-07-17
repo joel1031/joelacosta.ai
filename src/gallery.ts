@@ -15,3 +15,12 @@ const byPath = new Map(Object.entries(images).map(([path, mod]) => [rel(path), m
 export const gallery: ImageMetadata[] = data.images
 	.map((entry) => byPath.get(rel(entry.image)))
 	.filter((m): m is ImageMetadata => Boolean(m));
+
+// The same photos keyed by their Keystatic name. Lets a caller pin one specific
+// image (the OG card) without depending on its position — Keystatic renames
+// files to their array index, so reordering the gallery rewrites every path.
+export const galleryByName: Map<string, ImageMetadata> = new Map(
+	data.images
+		.map((entry) => [entry.name, byPath.get(rel(entry.image))] as const)
+		.filter((e): e is [string, ImageMetadata] => Boolean(e[1])),
+);

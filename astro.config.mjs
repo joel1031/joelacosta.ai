@@ -13,6 +13,11 @@ const cms = process.env.KEYSTATIC ? [react(), keystatic()] : [];
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://joelacosta.ai',
+	// /lab became /work. Static output emits meta-refresh stubs so old links survive.
+	redirects: {
+		'/lab': '/work',
+		'/lab/[...slug]': '/work/[...slug]',
+	},
 	integrations: [mdx(), sitemap(), ...cms],
 	fonts: [
 		{

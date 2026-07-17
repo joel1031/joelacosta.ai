@@ -1,7 +1,7 @@
 ---
 import { getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
-import { SITE_TITLE } from '../consts';
+import { SITE_TITLE, TABS } from '../consts';
 import { gallery } from '../gallery';
 
 // Same gallery as /look — shown here as a hero backdrop, in gallery.json order.
@@ -29,9 +29,11 @@ const slides = await Promise.all(
 		<main>
 			<h1 class="name" transition:name="brand-name">{SITE_TITLE}</h1>
 			<nav transition:name="brand-tabs">
-				<a class="word" href="/read">read</a>
-				<a class="word" href="/look">look</a>
-				<a class="word" href="/lab">lab</a>
+				{TABS.map((t) => (
+					<a class="word" href={t.href}>
+						{t.label}
+					</a>
+				))}
 			</nav>
 		</main>
 	</div>
