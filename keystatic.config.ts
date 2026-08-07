@@ -102,7 +102,7 @@ export default config({
 				}),
 				content: fields.mdx({
 					label: 'Content',
-					options: { image: projectImage },
+					options: { image: { ...projectImage, schema: captionSchema } },
 				}),
 			},
 		}),

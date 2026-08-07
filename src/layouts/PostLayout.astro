@@ -58,6 +58,17 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 			wrap.style.setProperty('--parallax-offset', '10');
 			img.parentNode?.insertBefore(wrap, img);
 			wrap.appendChild(img);
+
+			// The markdown title slot carries the caption; move it into a
+			// <figcaption> so it shows under the image instead of as a tooltip.
+			const caption = img.getAttribute('title');
+			if (!caption) return;
+			img.removeAttribute('title');
+			const figure = document.createElement('figure');
+			const cap = document.createElement('figcaption');
+			cap.innerHTML = caption;
+			wrap.parentNode?.insertBefore(figure, wrap);
+			figure.append(wrap, cap);
 		});
 	}
 	wrapProseImages();
@@ -110,6 +121,18 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 	}
 	.prose :global(.parallax) {
 		margin: 1.5em 0;
+	}
+	.prose :global(figure) {
+		margin: 1.5em 0;
+	}
+	.prose :global(figure .parallax) {
+		margin: 0;
+	}
+	.prose :global(figcaption) {
+		font-size: 0.75rem;
+		letter-spacing: 0.12em;
+		color: var(--muted);
+		margin-top: 0.8em;
 	}
 	.prose :global(h2),
 	.prose :global(h3) {
