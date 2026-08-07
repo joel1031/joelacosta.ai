@@ -8,6 +8,10 @@ const postImage = {
 	directory: 'src/assets/blog',
 	publicPath: '../../assets/blog/',
 };
+
+// Keystatic hides the markdown title slot by default; override it so each
+// in-post image can carry a caption — saved as ![alt](src "Caption").
+const captionSchema = { title: fields.text({ label: 'Caption' }) };
 const projectImage = {
 	directory: 'src/assets/projects',
 	publicPath: '../../assets/projects/',
@@ -67,7 +71,7 @@ export default config({
 				heroImage: fields.image({ label: 'Hero image', ...postImage }),
 				content: fields.mdx({
 					label: 'Content',
-					options: { image: postImage },
+					options: { image: { ...postImage, schema: captionSchema } },
 				}),
 			},
 		}),
