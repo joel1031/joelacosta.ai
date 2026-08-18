@@ -45,34 +45,25 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 </Layout>
 
 <script>
-	// Wrap in-content images so they get the global .parallax effect.
+	// In-content images render uncropped at their natural aspect; the markdown
+	// title slot carries the caption, moved into a <figcaption> so it shows
+	// under the image instead of as a tooltip.
 	// Runs on load and after every view-transition navigation.
-	function wrapProseImages() {
+	function captionProseImages() {
 		document.querySelectorAll<HTMLImageElement>('.prose img').forEach((img) => {
-			if (img.closest('.parallax')) return;
-			const w = Number(img.getAttribute('width')) || img.naturalWidth || 16;
-			const h = Number(img.getAttribute('height')) || img.naturalHeight || 9;
-			const wrap = document.createElement('div');
-			wrap.className = 'parallax';
-			wrap.style.aspectRatio = `${w} / ${h}`;
-			wrap.style.setProperty('--parallax-offset', '10');
-			img.parentNode?.insertBefore(wrap, img);
-			wrap.appendChild(img);
-
-			// The markdown title slot carries the caption; move it into a
-			// <figcaption> so it shows under the image instead of as a tooltip.
+			if (img.closest('figure')) return;
 			const caption = img.getAttribute('title');
 			if (!caption) return;
 			img.removeAttribute('title');
 			const figure = document.createElement('figure');
 			const cap = document.createElement('figcaption');
 			cap.innerHTML = caption;
-			wrap.parentNode?.insertBefore(figure, wrap);
-			figure.append(wrap, cap);
+			img.parentNode?.insertBefore(figure, img);
+			figure.append(img, cap);
 		});
 	}
-	wrapProseImages();
-	document.addEventListener('astro:page-load', wrapProseImages);
+	captionProseImages();
+	document.addEventListener('astro:page-load', captionProseImages);
 </script>
 
 <style>
@@ -118,14 +109,12 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 	}
 	.prose :global(img) {
 		border-radius: 4px;
-	}
-	.prose :global(.parallax) {
 		margin: 1.5em 0;
 	}
 	.prose :global(figure) {
 		margin: 1.5em 0;
 	}
-	.prose :global(figure .parallax) {
+	.prose :global(figure img) {
 		margin: 0;
 	}
 	.prose :global(figcaption) {
