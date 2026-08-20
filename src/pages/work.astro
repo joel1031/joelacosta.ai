@@ -1,11 +1,11 @@
 ---
 import { Image } from 'astro:assets';
-import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import PersonSchema from '../components/PersonSchema.astro';
 import { CALENDLY_URL, FORMSPREE_ENDPOINT, SOCIALS } from '../consts';
+import { getVisible, showingDrafts } from '../collections';
 
-const projects = (await getCollection('projects')).sort(
+const projects = (await getVisible('projects')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 ---
@@ -70,7 +70,10 @@ const projects = (await getCollection('projects')).sort(
 								src={p.data.thumbnail}
 								alt=""
 							/>
-							<span class="t">{p.data.title}</span>
+							<span class="t">
+								{p.data.title}
+								{showingDrafts && p.data.draft && <span class="word draft-badge">draft</span>}
+							</span>
 						</a>
 					</li>
 				))
@@ -267,6 +270,9 @@ const projects = (await getCollection('projects')).sort(
 	}
 	li a:hover .t {
 		color: var(--fg);
+	}
+	.t .draft-badge {
+		margin-left: 0.5em;
 	}
 	@media (max-width: 900px) {
 		.projects {

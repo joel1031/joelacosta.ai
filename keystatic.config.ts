@@ -69,6 +69,7 @@ export default config({
 				}),
 				updatedDate: fields.date({ label: 'Updated' }),
 				heroImage: fields.image({ label: 'Hero image', ...postImage }),
+			draft: fields.checkbox({ label: 'Draft', description: 'Hidden from the built site.' }),
 				content: fields.mdx({
 					label: 'Content',
 					options: { image: { ...postImage, schema: captionSchema } },

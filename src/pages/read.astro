@@ -1,10 +1,10 @@
 ---
 import { Image } from 'astro:assets';
-import { getCollection } from 'astro:content';
 import FormattedDate from '../components/FormattedDate.astro';
 import Layout from '../layouts/Layout.astro';
+import { getVisible, showingDrafts } from '../collections';
 
-const posts = (await getCollection('blog')).sort(
+const posts = (await getVisible('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 ---
@@ -21,6 +21,9 @@ const posts = (await getCollection('blog')).sort(
 								<span class="d">
 									<FormattedDate date={post.data.pubDate} />
 								</span>
+								{showingDrafts && post.data.draft && (
+									<span class="word draft-badge">draft</span>
+								)}
 							</span>
 							{post.data.heroImage && (
 								<Image

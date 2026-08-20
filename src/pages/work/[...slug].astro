@@ -1,9 +1,10 @@
 ---
-import { type CollectionEntry, getCollection, render } from 'astro:content';
+import { type CollectionEntry, render } from 'astro:content';
+import { getVisible } from '../../collections';
 import PostLayout from '../../layouts/PostLayout.astro';
 
 export async function getStaticPaths() {
-	const projects = await getCollection('projects');
+	const projects = await getVisible('projects');
 	return projects.map((p) => ({
 		params: { slug: p.id },
 		props: p,

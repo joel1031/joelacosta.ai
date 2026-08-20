@@ -14,6 +14,8 @@ const blog = defineCollection({
 			pubDate: z.coerce.date(),
 			updatedDate: z.coerce.date().optional(),
 			heroImage: z.optional(image()),
+			// Kept in the repo but dropped from the production build — see src/collections.ts.
+			draft: z.boolean().default(false),
 		}),
 });
 
@@ -26,6 +28,7 @@ const projects = defineCollection({
 			pubDate: z.coerce.date(),
 			updatedDate: z.coerce.date().optional(),
 			thumbnail: image(),
+			draft: z.boolean().default(false),
 		}),
 });
 

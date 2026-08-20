@@ -92,6 +92,18 @@ p {
 	letter-spacing: 0.18em;
 }
 
+/* Dev-only badge on listing entries whose frontmatter says draft: true.
+   Never renders in the built site — those entries aren't there at all. */
+.draft-badge {
+	border: 1px solid var(--line);
+	border-radius: 2px;
+	padding: 0.15em 0.45em;
+	font-size: 0.625rem;
+	color: var(--faint);
+	flex-shrink: 0;
+	white-space: nowrap;
+}
+
 /* Reusable CSS-native parallax: a fixed box clips the image, which is scaled
    up and translated as it scrolls through the viewport. Set --parallax-offset
    (travel %) and an aspect-ratio on the .parallax container. */
