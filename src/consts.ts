@@ -16,7 +16,7 @@ export const TABS = [
 
 // This month's playlist, swapped by hand each month. In Spotify: playlist →
 // Share → Copy link, then keep the id between `/playlist/` and the `?`.
-export const SPOTIFY_PLAYLIST_ID = '45FIQq84FQviKLPXTyM0EL';
+export const SPOTIFY_PLAYLIST_ID = '7GEp5YWw0OKbn5kftEKj7a';
 
 // Formspree handles the contact form — the site is static and has no server of
 // its own. The endpoint is public by design; it only accepts mail addressed here.
