@@ -59,6 +59,26 @@
     {
       "name": "Osamason 2",
       "image": "/src/assets/gallery/images/14/image.JPG"
+    },
+    {
+      "name": "1938/1939 Delahaye Type 165 Cabriolet",
+      "image": "/src/assets/gallery/images/15/image.JPG"
+    },
+    {
+      "name": "Storm King 1",
+      "image": "/src/assets/gallery/images/16/image.JPG"
+    },
+    {
+      "name": "Storm King 2",
+      "image": "/src/assets/gallery/images/17/image.JPG"
+    },
+    {
+      "name": "West",
+      "image": "/src/assets/gallery/images/18/image.JPG"
+    },
+    {
+      "name": "Carmel Coast",
+      "image": "/src/assets/gallery/images/19/image.JPG"
     }
   ]
 }
