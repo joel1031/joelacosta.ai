@@ -1,6 +1,7 @@
 ---
-// The one navigation: J.AI centered, section links right. Fixed to the top. On small
-// screens the links move into a full-screen drawer behind a menu button.
+// The one navigation: J.AI centered, section links right, and the call button, which goes
+// to the booking section rather than opening the calendar over the page. Fixed to the top.
+// On small screens the links move into a full-screen drawer behind a menu button.
 // mode="always" — visible from the start (every page but home).
 // mode="hero"   — hidden until the hero has scrolled away (home).
 interface Props {
@@ -22,7 +23,7 @@ const LINKS = [
 	<a class="brand" href="/">J.AI</a>
 	<span class="links">
 		{LINKS.map((l) => <a class="w" href={l.href}>{l.label}</a>)}
-		<button class="cta-book" type="button" data-calendly><span>Book a <span class="long">Discovery</span> Call</span></button>
+		<a class="cta-book" href="/#book"><span>Book a <span class="long">Discovery</span> Call</span></a>
 	</span>
 </nav>
 {mode === 'always' && <div class="bar-spacer" aria-hidden="true"></div>}
@@ -30,7 +31,7 @@ const LINKS = [
 <div class="drawer" id="drawer" aria-label="Menu">
 	<button class="menu" type="button" aria-label="Close menu" data-menu><span></span><span></span></button>
 	{LINKS.map((l) => <a href={l.href}>{l.label}</a>)}
-	<button class="cta-book" type="button" data-calendly>Book a Discovery Call</button>
+	<a class="cta-book" href="/#book">Book a Discovery Call</a>
 </div>
 
 <style>
@@ -130,7 +131,7 @@ const LINKS = [
 	document.addEventListener('click', (e) => {
 		if (!(e.target instanceof Element)) return;
 		if (e.target.closest('[data-menu]')) return void toggle();
-		if (e.target.closest('#drawer a, #drawer [data-calendly]')) toggle(false);
+		if (e.target.closest('#drawer a')) toggle(false);
 	});
 	document.addEventListener('keydown', (e) => {
 		if (e.key === 'Escape') toggle(false);
