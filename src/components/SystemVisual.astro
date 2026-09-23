@@ -1,0 +1,655 @@
+---
+// A small line-art mockup of one system, drawn as it would look running. The label next
+// to it carries the meaning, so the drawing is hidden from screen readers.
+//
+// Every loop starts and ends on the finished frame, so a paused tile, a tile without
+// JavaScript and a tile under reduced motion all show the mockup complete. Services
+// toggles `live` while the tile is on screen; only then do the loops run.
+export type SystemKind = 'leads' | 'web' | 'pipeline';
+
+interface Props {
+	kind: SystemKind;
+}
+
+const { kind } = Astro.props;
+
+const LEADS = [16, 38, 60, 82];
+const PIPELINE = [37, 96, 155, 214];
+---
+
+<div class="sys">
+	<svg viewBox="0 0 250 100" aria-hidden="true" focusable="false">
+		{
+			kind === 'leads' && (
+				<>
+					{LEADS.map((y, i) => (
+						<>
+							<path class="ln" d={`M49 ${y} C 96 ${y}, 104 50, 150 50`} />
+							<path
+								class="lead-pulse glow"
+								d={`M49 ${y} C 96 ${y}, 104 50, 150 50`}
+								pathLength="100"
+								style={`animation-delay:${i * 1.5}s`}
+							/>
+							<rect class="pn" x="30" y={y - 9} width="18" height="18" rx="4" />
+						</>
+					))}
+					<g class="ic" transform="translate(39 16)">
+						<rect x="-5.5" y="-4" width="11" height="8" rx="1" />
+						<path d="M-5.5-3.5L0 .8L5.5-3.5" />
+					</g>
+					<g class="ic" transform="translate(39 38.5)">
+						<path d="M-4-5h8q2 0 2 2v4q0 2-2 2h-4.5l-3 2.6v-2.6h-.5q-2 0-2-2v-4q0-2 2-2z" />
+					</g>
+					<g class="ic" transform="translate(39 60)">
+						<rect x="-4" y="-6.5" width="8" height="13" rx="1.6" />
+						<path d="M-1.2 4h2.4" />
+					</g>
+					<g class="ic" transform="translate(39 82)">
+						<circle r="5.5" />
+						<ellipse rx="2.4" ry="5.5" />
+						<path d="M-5.5 0h11" />
+					</g>
+
+					<rect class="pn" x="150" y="14" width="74" height="72" rx="4" />
+					<rect class="b1" x="158" y="21" width="26" height="4" rx="2" />
+					<path class="ln thin" d="M150 30H224" />
+					{[49, 62, 75].map((y) => (
+						<>
+							<circle class="b1" cx="163" cy={y + 4.5} r="3.5" />
+							<rect class="b1" x="170" y={y + 2} width="44" height="3" rx="1.5" />
+							<rect class="b2" x="170" y={y + 6.5} width="26" height="2" rx="1" />
+						</>
+					))}
+					<g class="lead-top glow">
+						<circle class="hi" cx="163" cy="40.5" r="3.5" />
+						<rect class="hi" x="170" y="38" width="44" height="3" rx="1.5" />
+						<rect class="hi dim" x="170" y="42.5" width="26" height="2" rx="1" />
+					</g>
+				</>
+			)
+		}
+
+		{
+			kind === 'web' && (
+				<>
+					<rect class="pn" x="25" y="8" width="200" height="84" rx="4" />
+					<path class="ln thin" d="M25 20H225" />
+					<circle class="b1" cx="33" cy="14" r="2" />
+					<circle class="b1" cx="40" cy="14" r="2" />
+					<circle class="b1" cx="47" cy="14" r="2" />
+					<rect class="tint" x="60" y="11" width="120" height="6" rx="3" />
+
+					<g class="web-1">
+						<rect class="tint" x="35" y="26" width="16" height="4" rx="2" />
+						<rect class="b2" x="171" y="27" width="11" height="2.5" rx="1.25" />
+						<rect class="b2" x="186" y="27" width="11" height="2.5" rx="1.25" />
+						<rect class="b2" x="201" y="27" width="11" height="2.5" rx="1.25" />
+					</g>
+					<g class="web-2">
+						<rect class="b1" x="70" y="37" width="110" height="6" rx="3" />
+						<rect class="b2" x="92" y="47" width="66" height="3.5" rx="1.75" />
+					</g>
+					<rect class="hi glow web-3" x="107" y="55" width="36" height="9" rx="4.5" />
+					{[37, 97, 157].map((x, i) => (
+						<g class={`web-${i + 4}`}>
+							<rect class="card" x={x} y="70" width="56" height="15" rx="2.5" />
+							<rect class="b1" x={x + 6} y="74" width="7" height="7" rx="1.5" />
+							<rect class="b1" x={x + 17} y="75" width="26" height="2.5" rx="1.25" />
+							<rect class="b2" x={x + 17} y="79.5" width="18" height="2" rx="1" />
+						</g>
+					))}
+				</>
+			)
+		}
+
+		{
+			kind === 'pipeline' && (
+				<g transform="translate(0 4)">
+					<path class="ln" d="M53 42H80M76 38.5L80 42L76 45.5M112 42H139M135 38.5L139 42L135 45.5M171 42H198M194 38.5L198 42L194 45.5" />
+					{PIPELINE.map((x) => (
+						<>
+							<rect class="pn" x={x - 15} y="27" width="30" height="30" rx="5" />
+							<rect class="b1" x={x - 11} y="65" width="22" height="3" rx="1.5" />
+							<rect class="b2" x={x - 7} y="71" width="14" height="2.5" rx="1.25" />
+						</>
+					))}
+					{[53, 112, 171].map((x, i) => (
+						<rect class={`hi glow pipe-p pipe-p${i + 1}`} x={x} y="40.75" width="7" height="2.5" rx="1.25" />
+					))}
+					{[0, 1].map((on) => (
+						<>
+							<g class={on ? 'on glow pipe-n1' : undefined}>
+								{on ? <rect class="ring" x="22" y="27" width="30" height="30" rx="5" /> : null}
+								<g class="ic" transform="translate(37 42)">
+									<rect x="-4.5" y="-6" width="9" height="12" rx="1.2" />
+									<path d="M-2.3-2.5h4.6M-2.3.5h4.6M-2.3 3.5h2.6" />
+								</g>
+							</g>
+							<g class={on ? 'on glow pipe-n2' : undefined}>
+								{on ? <rect class="ring" x="81" y="27" width="30" height="30" rx="5" /> : null}
+								<g class="ic" transform="translate(96 42)">
+									<circle cy="-2.5" r="2.6" />
+									<path d="M-5 5.5q0-4.6 5-4.6q5 0 5 4.6" />
+								</g>
+							</g>
+							<g class={on ? 'on glow pipe-n3' : undefined}>
+								{on ? <rect class="ring" x="140" y="27" width="30" height="30" rx="5" /> : null}
+								<g class="ic" transform="translate(155 42)">
+									<rect x="-5.5" y="-4" width="11" height="8" rx="1" />
+									<path d="M-5.5-3.5L0 .8L5.5-3.5" />
+								</g>
+							</g>
+							<g class={on ? 'on glow pipe-n4' : undefined}>
+								{on ? <rect class="ring" x="199" y="27" width="30" height="30" rx="5" /> : null}
+								<g class="ic" transform="translate(214 42)">
+									<rect x="-5.5" y="-4.5" width="11" height="10" rx="1.2" />
+									<path d="M-5.5-1h11M-2.5-6.5v3M2.5-6.5v3" />
+								</g>
+							</g>
+						</>
+					))}
+					<g class="glow pipe-check">
+						<circle class="hi" cx="228" cy="27" r="5.5" />
+						<path class="tick" d="M225.4 27.2L227.3 29.1L230.8 25.3" />
+					</g>
+				</g>
+			)
+		}
+	</svg>
+</div>
+
+<style>
+	/* The mockup greys, by role. Dark by default; the white page swaps them below. */
+	.sys {
+		--sv-edge: #1f1f1f;
+		--sv-panel: #151515;
+		--sv-panel-edge: #3d3d3d;
+		--sv-card: #1a1a1a;
+		--sv-card-edge: #3a3a3a;
+		--sv-bubble: #1c1c1c;
+		--sv-avatar: #1f1f1f;
+		--sv-outline: #4a4a4a;
+		--sv-field: #121212;
+		--sv-field-edge: #2e2e2e;
+		--sv-line: #444;
+		--sv-line-thin: #333;
+		--sv-grid: #222;
+		--sv-icon: #5a5a5a;
+		--sv-bar: #333;
+		--sv-bar-2: #2a2a2a;
+		--sv-mid: #6a6a6a;
+		--sv-on-hue: #8a8a8a;
+		--sv-spark: #cfcfcf;
+		width: 100%;
+		aspect-ratio: 5 / 2;
+		border: 1px solid var(--sv-edge);
+		border-radius: 4px;
+		/* A faint wash of the pillar's hue from the top, like a screen lit from inside. */
+		background: radial-gradient(
+			120% 90% at 50% 0%,
+			color-mix(in srgb, var(--hue, #fff) 5%, var(--tile)),
+			var(--tile) 70%
+		);
+		overflow: hidden;
+	}
+	/* On white: light UI on a near-white tile, marks on the accent in white. */
+	:global(:root[data-theme='light']) .sys {
+		--sv-edge: #e6e6e6;
+		--sv-panel: #fff;
+		--sv-panel-edge: #dedede;
+		--sv-card: #f6f6f6;
+		--sv-card-edge: #e2e2e2;
+		--sv-bubble: #f3f3f3;
+		--sv-avatar: #f1f1f1;
+		--sv-outline: #cdcdcd;
+		--sv-field: #fff;
+		--sv-field-edge: #e2e2e2;
+		--sv-line: #cdcdcd;
+		--sv-line-thin: #e6e6e6;
+		--sv-grid: #efefef;
+		--sv-icon: #9e9e9e;
+		--sv-bar: #dcdcdc;
+		--sv-bar-2: #ebebeb;
+		--sv-mid: #9a9a9a;
+		--sv-on-hue: #fff;
+		--sv-spark: #8a8a8a;
+	}
+	.sys svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	/* Palette: hairline structure, dark panels, grey placeholder text, one bright element in the
+	   accent (`--hue`, set by Services). */
+	.pn {
+		fill: var(--sv-panel);
+		stroke: var(--sv-panel-edge);
+		stroke-width: 1;
+	}
+	.phone {
+		stroke: var(--sv-outline);
+		stroke-width: 1.25;
+	}
+	.card {
+		fill: var(--sv-card);
+		stroke: var(--sv-card-edge);
+		stroke-width: 1;
+	}
+	.ln {
+		fill: none;
+		stroke: var(--sv-line);
+		stroke-width: 1.25;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+	.ln.thin {
+		stroke: var(--sv-line-thin);
+		stroke-width: 1;
+	}
+	.ln.up {
+		stroke: var(--sv-mid);
+	}
+	.dashed {
+		stroke-dasharray: 2 2;
+	}
+	.grid {
+		fill: none;
+		stroke: var(--sv-grid);
+		stroke-width: 1;
+	}
+	.ic {
+		fill: none;
+		stroke: var(--sv-icon);
+		stroke-width: 1.15;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+	.b1 {
+		fill: var(--sv-bar);
+	}
+	.b2 {
+		fill: var(--sv-bar-2);
+	}
+	/* Quiet, lasting touches of the hue, so a mockup mid-rebuild never goes all grey. */
+	.tint {
+		fill: color-mix(in srgb, var(--hue, #fff) 55%, var(--sv-card));
+	}
+	.ln.kpi {
+		stroke: var(--hue, var(--sv-mid));
+	}
+	.hi {
+		fill: var(--hue, #f2f2f2);
+	}
+	.hi.dim {
+		fill: color-mix(in srgb, var(--hue, #fff) 70%, var(--tile));
+	}
+	.ink {
+		fill: var(--sv-on-hue);
+	}
+	.tick {
+		fill: none;
+		stroke: var(--tile);
+		stroke-width: 1.6;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+	.glow {
+		filter: drop-shadow(0 0 2px color-mix(in srgb, var(--hue, #fff) 40%, transparent));
+	}
+	.on .ic,
+	.ring {
+		fill: none;
+		stroke: var(--hue, #f2f2f2);
+		stroke-width: 1.25;
+	}
+	.wf {
+		fill: none;
+		stroke: var(--sv-outline);
+		stroke-width: 1;
+		stroke-dasharray: 3 2.5;
+	}
+	.knob {
+		fill: var(--sv-on-hue);
+	}
+	.num {
+		fill: var(--sv-mid);
+		font-family: var(--font-unbounded), sans-serif;
+		font-weight: 700;
+		font-size: 15px;
+	}
+	.avatar {
+		fill: var(--sv-avatar);
+		stroke: var(--sv-outline);
+		stroke-width: 1;
+	}
+	.star-o {
+		fill: none;
+		stroke: var(--sv-outline);
+		stroke-width: 1;
+		stroke-linejoin: round;
+	}
+	.spark {
+		fill: var(--sv-spark);
+	}
+	.bubble {
+		fill: var(--sv-bubble);
+		stroke: var(--sv-card-edge);
+		stroke-width: 1;
+	}
+	.dot {
+		fill: var(--sv-mid);
+	}
+	.field {
+		fill: var(--sv-field);
+		stroke: var(--sv-field-edge);
+		stroke-width: 1;
+	}
+
+	/* Motion. Everything that moves scales or shifts around its own box. */
+	.sys :global(*) {
+		transform-box: fill-box;
+		transform-origin: center;
+	}
+	.sys:not(.live) :global(*) {
+		animation-play-state: paused !important;
+	}
+
+	/* leads: pulses run from each channel into the inbox; its top row brightens as each lands. */
+	.lead-pulse {
+		fill: none;
+		stroke: var(--hue, #f2f2f2);
+		stroke-width: 1.6;
+		stroke-linecap: round;
+		stroke-dasharray: 8 108;
+		stroke-dashoffset: 8;
+		animation: sv-lead-pulse 6s ease-in-out infinite;
+	}
+	.lead-top {
+		animation: sv-lead-top 1.5s ease-out infinite;
+	}
+	@keyframes sv-lead-pulse {
+		0% {
+			stroke-dashoffset: 8;
+		}
+		25%,
+		100% {
+			stroke-dashoffset: -100;
+		}
+	}
+	@keyframes sv-lead-top {
+		0% {
+			opacity: 1;
+		}
+		70%,
+		100% {
+			opacity: 0.5;
+		}
+	}
+
+	/* web: the page builds in a piece at a time, holds, then starts over. */
+	.web-1 {
+		animation: sv-web-1 7s ease-out infinite;
+	}
+	.web-2 {
+		animation: sv-web-2 7s ease-out infinite;
+	}
+	.web-3 {
+		animation: sv-web-3 7s ease-out infinite;
+	}
+	.web-4 {
+		animation: sv-web-4 7s ease-out infinite;
+	}
+	.web-5 {
+		animation: sv-web-5 7s ease-out infinite;
+	}
+	.web-6 {
+		animation: sv-web-6 7s ease-out infinite;
+	}
+	@keyframes sv-web-1 {
+		0%,
+		8%,
+		26%,
+		100% {
+			opacity: 1;
+			transform: none;
+		}
+		12%,
+		20% {
+			opacity: 0;
+			transform: translateY(3px);
+		}
+	}
+	@keyframes sv-web-2 {
+		0%,
+		8%,
+		34%,
+		100% {
+			opacity: 1;
+			transform: none;
+		}
+		12%,
+		28% {
+			opacity: 0;
+			transform: translateY(3px);
+		}
+	}
+	@keyframes sv-web-3 {
+		0%,
+		8%,
+		42%,
+		100% {
+			opacity: 1;
+			transform: none;
+		}
+		12%,
+		36% {
+			opacity: 0;
+			transform: translateY(3px);
+		}
+	}
+	@keyframes sv-web-4 {
+		0%,
+		8%,
+		50%,
+		100% {
+			opacity: 1;
+			transform: none;
+		}
+		12%,
+		44% {
+			opacity: 0;
+			transform: translateY(3px);
+		}
+	}
+	@keyframes sv-web-5 {
+		0%,
+		8%,
+		56%,
+		100% {
+			opacity: 1;
+			transform: none;
+		}
+		12%,
+		50% {
+			opacity: 0;
+			transform: translateY(3px);
+		}
+	}
+	@keyframes sv-web-6 {
+		0%,
+		8%,
+		62%,
+		100% {
+			opacity: 1;
+			transform: none;
+		}
+		12%,
+		56% {
+			opacity: 0;
+			transform: translateY(3px);
+		}
+	}
+
+	/* pipeline: a lead runs form to calendar, each step lighting as it's handed on. */
+	.pipe-p {
+		opacity: 0;
+	}
+	.pipe-p1 {
+		animation: sv-pipe-p1 6s ease-in-out infinite;
+	}
+	.pipe-p2 {
+		animation: sv-pipe-p2 6s ease-in-out infinite;
+	}
+	.pipe-p3 {
+		animation: sv-pipe-p3 6s ease-in-out infinite;
+	}
+	.pipe-n1 {
+		animation: sv-pipe-n1 6s ease-in-out infinite;
+	}
+	.pipe-n2 {
+		animation: sv-pipe-n2 6s ease-in-out infinite;
+	}
+	.pipe-n3 {
+		animation: sv-pipe-n3 6s ease-in-out infinite;
+	}
+	.pipe-n4 {
+		animation: sv-pipe-n4 6s ease-in-out infinite;
+	}
+	.pipe-check {
+		animation: sv-pipe-check 6s ease-out infinite;
+	}
+	@keyframes sv-pipe-p1 {
+		0%,
+		17% {
+			opacity: 0;
+			transform: translateX(0);
+		}
+		19% {
+			opacity: 1;
+			transform: translateX(0);
+		}
+		29% {
+			opacity: 1;
+			transform: translateX(20px);
+		}
+		31%,
+		100% {
+			opacity: 0;
+			transform: translateX(20px);
+		}
+	}
+	@keyframes sv-pipe-p2 {
+		0%,
+		32% {
+			opacity: 0;
+			transform: translateX(0);
+		}
+		34% {
+			opacity: 1;
+			transform: translateX(0);
+		}
+		44% {
+			opacity: 1;
+			transform: translateX(20px);
+		}
+		46%,
+		100% {
+			opacity: 0;
+			transform: translateX(20px);
+		}
+	}
+	@keyframes sv-pipe-p3 {
+		0%,
+		47% {
+			opacity: 0;
+			transform: translateX(0);
+		}
+		49% {
+			opacity: 1;
+			transform: translateX(0);
+		}
+		59% {
+			opacity: 1;
+			transform: translateX(20px);
+		}
+		61%,
+		100% {
+			opacity: 0;
+			transform: translateX(20px);
+		}
+	}
+	@keyframes sv-pipe-n1 {
+		0%,
+		8%,
+		16%,
+		100% {
+			opacity: 1;
+		}
+		12%,
+		14% {
+			opacity: 0;
+		}
+	}
+	@keyframes sv-pipe-n2 {
+		0%,
+		8%,
+		31%,
+		100% {
+			opacity: 1;
+		}
+		12%,
+		29% {
+			opacity: 0;
+		}
+	}
+	@keyframes sv-pipe-n3 {
+		0%,
+		8%,
+		46%,
+		100% {
+			opacity: 1;
+		}
+		12%,
+		44% {
+			opacity: 0;
+		}
+	}
+	@keyframes sv-pipe-n4 {
+		0%,
+		8%,
+		61%,
+		100% {
+			opacity: 1;
+		}
+		12%,
+		59% {
+			opacity: 0;
+		}
+	}
+	@keyframes sv-pipe-check {
+		0%,
+		8%,
+		70%,
+		100% {
+			opacity: 1;
+			transform: none;
+		}
+		12%,
+		63% {
+			opacity: 0;
+			transform: scale(0.4);
+		}
+		67% {
+			opacity: 1;
+			transform: scale(1.15);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.sys :global(*) {
+			animation: none !important;
+		}
+	}
+</style>

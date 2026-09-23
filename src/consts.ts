@@ -1,8 +1,10 @@
 // Place any global data in this file.
 // You can import this data from anywhere in your site by using the `import` keyword.
 
-export const SITE_TITLE = 'Joel Acosta';
+export const SITE_TITLE = 'joelacosta.ai';
 export const SITE_DESCRIPTION = 'read · look · work · listen';
+// The legal name, shown in the hero and the footer.
+export const COMPANY = 'Joel Acosta AI LLC';
 
 // The whole navigation. Shared by the header (Nav.astro) and the home hero
 // (index.astro) — they morph into each other via the `brand-tabs` view

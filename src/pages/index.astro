@@ -1,145 +1,54 @@
 ---
-import { getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
-import { SITE_TITLE, TABS } from '../consts';
-import { gallery } from '../gallery';
+import Hero from '../components/Hero.astro';
+import Services from '../components/Services.astro';
+import Process from '../components/Process.astro';
+import Pricing from '../components/Pricing.astro';
+import Faq from '../components/Faq.astro';
+import Book from '../components/Book.astro';
+import Footer from '../components/Footer.astro';
 
-// Same gallery as /look — shown here as a hero backdrop, in gallery.json order.
-const slides = await Promise.all(
-	gallery.map(async (src) => (await getImage({ src, width: 1920, format: 'webp' })).src),
-);
+const description =
+  'Joel Acosta AI LLC builds, automates and grows small businesses: product development, automation and go-to-market.';
 ---
 
-<Layout nav={false}>
-	<div class="hero">
-		<div class="hero-bg">
-			{
-				slides.map((src, i) => (
-					<img
-						class="slide"
-						src={src}
-						alt=""
-						loading={i === 0 ? 'eager' : 'lazy'}
-						decoding="async"
-					/>
-				))
-			}
-		</div>
-		<div class="hero-overlay"></div>
-		<main>
-			<h1 class="name" transition:name="brand-name">{SITE_TITLE}</h1>
-			<nav transition:name="brand-tabs">
-				{TABS.map((t) => (
-					<a class="word" href={t.href}>
-						{t.label}
-					</a>
-				))}
-			</nav>
-		</main>
+<Layout description={description} bar="hero" theme="light" footer={false}>
+	<Hero />
+	<!-- The white page, as one sheet that slides up over the stuck hero. The footer rides
+	     inside it, so nothing below the hero is ever see-through. -->
+	<div class="sheet">
+		<Services />
+		<Process />
+		<Pricing />
+		<Faq />
+		<Book />
+		<Footer />
 	</div>
 </Layout>
 
 <style>
-	.hero {
+	.sheet {
 		position: relative;
-		min-height: 100dvh;
-		overflow: hidden;
-	}
-	.hero-bg {
-		position: absolute;
-		inset: 0;
-		z-index: 0;
-		background: #000;
-	}
-	.slide {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		opacity: 0;
-		transition: opacity 1.2s ease;
-	}
-	.slide.is-active {
-		opacity: 1;
-	}
-	.hero-overlay {
-		position: absolute;
-		inset: 0;
 		z-index: 1;
-		background: rgba(0, 0, 0, 0.55);
+		background: var(--bg);
+		border-radius: 28px 28px 0 0;
+		/* Falls on the dark hero, so it's black whatever the theme. */
+		box-shadow: 0 -24px 60px rgba(0, 0, 0, 0.35);
 	}
-	main {
-		position: relative;
-		z-index: 2;
-		min-height: 100dvh;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 2.2em;
-		padding: 1em;
-	}
-	.name {
-		font-size: 1.5rem;
-		font-weight: 400;
-		letter-spacing: 0.14em;
-		text-transform: lowercase;
-		margin: 0;
-		color: #f4f4f4;
-	}
-	nav {
-		display: flex;
-		gap: 2.1em;
-	}
-	nav a {
-		font-size: 0.9375rem;
-		color: rgba(255, 255, 255, 0.7);
-		transition: color var(--anim-dur) var(--anim-ease);
-	}
-	nav a:hover {
-		color: #fff;
-	}
-	@media (max-width: 600px) {
-		main {
-			gap: 1.8em;
-		}
-		nav {
-			gap: 1.6em;
+	@media (max-width: 700px) {
+		.sheet {
+			border-radius: 20px 20px 0 0;
 		}
 	}
 </style>
 
 <script>
-	let timer: ReturnType<typeof setInterval> | undefined;
+	import { reveal } from '../scripts/reveal';
 
-	function initHero() {
-		clearInterval(timer);
-		const slides = Array.from(document.querySelectorAll<HTMLElement>('.hero-bg .slide'));
-		if (!slides.length) return;
-
-		slides.forEach((s) => s.classList.remove('is-active'));
-		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-		// Shuffle so each visit starts somewhere different (skip when motion is reduced).
-		if (!reduced) {
-			for (let i = slides.length - 1; i > 0; i--) {
-				const j = Math.floor(Math.random() * (i + 1));
-				[slides[i], slides[j]] = [slides[j], slides[i]];
-			}
-		}
-
-		let pos = 0;
-		slides[pos].classList.add('is-active');
-
-		if (slides.length < 2 || reduced) return;
-		timer = setInterval(() => {
-			slides[pos].classList.remove('is-active');
-			pos = (pos + 1) % slides.length;
-			slides[pos].classList.add('is-active');
-		}, 3000);
-	}
-
-	initHero();
-	document.addEventListener('astro:page-load', initHero);
+	// Section headings and blocks below Services arrive as they scroll in.
+	document.addEventListener('astro:page-load', () => {
+		if (!document.querySelector('.hero')) return;
+		const off = reveal();
+		document.addEventListener('astro:before-swap', off, { once: true });
+	});
 </script>

@@ -1,0 +1,325 @@
+---
+import { getImage } from 'astro:assets';
+import { gallery } from '../gallery';
+import { COMPANY } from '../consts';
+
+// The photos that hold up as dots: strong shapes, no fine detail that turns to mush.
+const PICKS = [0, 2, 6, 8, 9, 10, 11, 12, 13, 16, 19];
+
+// Small versions are all the dot grid ever samples — 640px is plenty for a 120-column grid.
+const photos = await Promise.all(
+	PICKS.filter((i) => gallery[i]).map((i) =>
+		getImage({ src: gallery[i], width: 640, format: 'jpeg', quality: 70 }),
+	),
+);
+const sources = photos.map((p) => p.src);
+---
+
+<!-- The hero keeps its own dark palette whatever the page's theme: the photos are made for
+     black, and the white page starts where it ends. -->
+<section class="hero" id="hero" data-theme="dark">
+	<canvas id="hero-dots" aria-hidden="true"></canvas>
+	<div class="scrim" aria-hidden="true"></div>
+	<div class="navfade" aria-hidden="true"></div>
+
+	<nav class="hero-nav" id="hero-nav" aria-label="Home">
+		<span class="spacer"></span>
+		<a class="w" href="#about">About</a>
+		<a class="w" href="#process">Process</a>
+		<a class="w" href="#pricing">Pricing</a>
+		<a class="w" href="#faq">FAQ</a>
+		<button class="cta-book" type="button" data-calendly>Book a Discovery Call</button>
+		<button class="menu" type="button" aria-label="Menu" data-menu><span></span><span></span></button>
+	</nav>
+
+	<div class="copy" id="hero-copy">
+		<p class="llc" id="hero-llc">{COMPANY}</p>
+		<h1 class="h"><span id="hero-name">joelacosta.ai</span></h1>
+		<ul class="pillars" id="hero-pillars">
+			<li>GTM</li>
+			<li class="sep" aria-hidden="true">·</li>
+			<li>Product Development</li>
+			<li class="sep" aria-hidden="true">·</li>
+			<li>Automation</li>
+		</ul>
+		<button class="cta-book hero-cta" id="hero-cta" type="button" data-calendly>Book a Discovery Call</button>
+	</div>
+</section>
+
+<script type="application/json" id="hero-photos" set:html={JSON.stringify(sources)}></script>
+
+<style>
+	/* Stuck to the top of the screen: the hero never scrolls away. The white page (the
+	   `.sheet` in index.astro) slides up over it instead. */
+	.hero {
+		position: sticky;
+		top: 0;
+		z-index: 0;
+		height: 100vh;
+		height: 100svh;
+		overflow: hidden;
+		background: var(--bg);
+		color: var(--fg);
+	}
+	#hero-dots {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		display: block;
+		will-change: filter;
+		-webkit-mask-image: linear-gradient(to bottom, #000 62%, rgba(0, 0, 0, 0) 100%);
+		mask-image: linear-gradient(to bottom, #000 62%, rgba(0, 0, 0, 0) 100%);
+	}
+	.scrim,
+	.navfade {
+		position: absolute;
+		pointer-events: none;
+		opacity: 0;
+	}
+	.scrim {
+		inset: 0;
+		background: radial-gradient(
+			ellipse 46% 40% at 50% 52%,
+			rgba(var(--veil), 0.86) 0%,
+			rgba(var(--veil), 0.6) 55%,
+			rgba(var(--veil), 0) 100%
+		);
+	}
+	.navfade {
+		inset: 0 0 auto 0;
+		height: 24%;
+		background: linear-gradient(to bottom, rgba(var(--veil), 0.78), rgba(var(--veil), 0));
+	}
+
+	.hero-nav {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 3;
+		display: flex;
+		align-items: center;
+		gap: 2.2em;
+		padding: calc(22px + env(safe-area-inset-top, 0px)) clamp(16px, 3vw, 40px) 22px;
+		font-size: 0.9rem;
+		letter-spacing: 0.02em;
+		opacity: 0;
+	}
+	.spacer {
+		flex: 1;
+	}
+	.w {
+		color: var(--text);
+		/* Holds up over the brightest photos. */
+		text-shadow: 0 1px 10px rgba(var(--shade), 0.9), 0 0 3px rgba(var(--shade), 0.7);
+		transition: color var(--hover), text-shadow var(--hover);
+	}
+	.w:hover {
+		color: var(--head);
+		text-shadow: var(--glow);
+	}
+
+	.copy {
+		position: absolute;
+		inset: 0;
+		z-index: 2;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		padding: 3em 16px;
+		opacity: 0;
+	}
+	.llc {
+		margin: 0 0 1.3em;
+		color: var(--fg);
+		font-size: clamp(0.8rem, 1vw, 0.95rem);
+		font-weight: 500;
+		line-height: 1;
+		letter-spacing: 0.32em;
+		text-transform: uppercase;
+		text-shadow: 0 1px 12px rgba(var(--shade), 0.9), 0 0 3px rgba(var(--shade), 0.7);
+	}
+	.h {
+		margin: 0;
+		color: var(--head);
+		max-width: 20ch;
+		font-family: var(--font-unbounded), sans-serif;
+		font-weight: 700;
+		font-size: clamp(1.6rem, 6.4vw, 5.6rem);
+		line-height: 1;
+		letter-spacing: 0;
+		text-transform: uppercase;
+		white-space: nowrap;
+		text-shadow: 0 1px 18px rgba(var(--shade), 0.55);
+		transition: text-shadow var(--hover);
+	}
+	.h:hover {
+		text-shadow: 0 0 16px rgba(var(--ink), 0.3);
+	}
+	/* Middle pillar pinned to the exact centre: equal flexible side columns. */
+	.pillars {
+		list-style: none;
+		padding: 0;
+		margin: 1.3em 0 0;
+		width: 100%;
+		max-width: 46em;
+		display: grid;
+		grid-template-columns: 1fr auto auto auto 1fr;
+		align-items: center;
+		column-gap: 1.1em;
+		white-space: nowrap;
+	}
+	.pillars li {
+		font-size: clamp(1rem, 1.55vw, 1.35rem);
+		line-height: 1.35;
+		color: var(--fg);
+		letter-spacing: 0.02em;
+		text-shadow: 0 1px 12px rgba(var(--shade), 0.9), 0 0 3px rgba(var(--shade), 0.7);
+	}
+	.pillars li:first-child {
+		justify-self: end;
+	}
+	.pillars li:last-child {
+		justify-self: start;
+	}
+	.hero-cta {
+		margin-top: 1.8em;
+		padding: 0.85em 2.1em;
+		font-size: 1.1rem;
+	}
+
+	@media (max-width: 700px) {
+		.w {
+			display: none;
+		}
+		.menu {
+			display: grid;
+			margin-right: -8px;
+		}
+		.hero-nav {
+			gap: 1em;
+			font-size: 0.8rem;
+		}
+		.scrim {
+			background: radial-gradient(
+				ellipse 86% 38% at 50% 50%,
+				rgba(var(--veil), 0.86) 0%,
+				rgba(var(--veil), 0.6) 55%,
+				rgba(var(--veil), 0) 100%
+			);
+		}
+		.pillars {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 0.35em;
+		}
+		.pillars .sep {
+			display: none;
+		}
+	}
+
+	/* Reduced motion: the finished hero, straight away. */
+	@media (prefers-reduced-motion: reduce) {
+		.copy,
+		.hero-nav,
+		.scrim,
+		.navfade {
+			opacity: 1;
+		}
+	}
+</style>
+
+<script>
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
+	import { makeDither } from '../scripts/dither';
+
+	gsap.registerPlugin(ScrollTrigger);
+
+	function init() {
+		const hero = document.querySelector<HTMLElement>('.hero');
+		const canvas = document.querySelector<HTMLCanvasElement>('#hero-dots');
+		const data = document.querySelector<HTMLScriptElement>('#hero-photos');
+		if (!hero || !canvas || !data) return;
+
+		const sources: string[] = JSON.parse(data.textContent || '[]');
+		const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+		const dither = makeDither(canvas, hero, sources, { lean: !still });
+		const cleanups: (() => void)[] = [dither.destroy];
+
+		if (still) {
+			dither.showFinished();
+		} else {
+			// The opening plays by itself: the photo comes out of a blur, then the hero
+			// arrives one piece at a time.
+			const tl = gsap.timeline({
+				defaults: { ease: 'none' },
+				onUpdate: () => dither.setIntro(tl.progress()),
+				onComplete: () => dither.idle(),
+			});
+			tl.to('.scrim, .navfade', { opacity: 1, duration: 0.7, ease: 'power1.out' }, 0.2)
+				.set('#hero-copy', { opacity: 1 }, 0.55)
+				.fromTo(
+					'#hero-llc',
+					{ opacity: 0, filter: 'blur(8px)' },
+					{ opacity: 1, filter: 'blur(0px)', duration: 0.8, ease: 'power2.out' },
+					0.9,
+				)
+				.fromTo(
+					'#hero-name',
+					{ opacity: 0, scale: 1.45, filter: 'blur(14px)' },
+					{ opacity: 1, scale: 1, filter: 'blur(0px)', duration: 1, ease: 'power2.out' },
+					0.6,
+				)
+				.fromTo(
+					'#hero-pillars',
+					{ opacity: 0, filter: 'blur(8px)' },
+					{ opacity: 1, filter: 'blur(0px)', duration: 0.7, ease: 'power2.out' },
+					1.25,
+				)
+				.fromTo(
+					'#hero-cta',
+					{ opacity: 0, filter: 'blur(8px)' },
+					{ opacity: 1, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out' },
+					1.55,
+				)
+				.fromTo(
+					'#hero-nav',
+					{ opacity: 0, y: -10 },
+					{ opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
+					1.8,
+				);
+			cleanups.push(() => tl.kill());
+
+			// Scrolling on: the hero drifts up and blurs away as the page slides over it. The
+			// page, not the hero, is the trigger: the hero is stuck in place, so its own position
+			// never changes with scroll. Explicit start values: a plain .to() records whatever
+			// the copy looks like when it first runs, and on a page opened part-way down that is
+			// before the load-in has shown it, so scrolling back up would restore it invisible.
+			const sheet = document.querySelector('.sheet') ?? hero.nextElementSibling ?? hero;
+			const out = gsap
+				.timeline({
+					defaults: { ease: 'none' },
+					scrollTrigger: { trigger: sheet, start: 'top bottom', end: 'top top', scrub: true },
+				})
+				.fromTo(
+					'#hero-copy',
+					{ y: 0, opacity: 1, filter: 'blur(0px)' },
+					{ y: -90, opacity: 0, filter: 'blur(12px)', immediateRender: false },
+					0,
+				);
+			cleanups.push(() => {
+				out.scrollTrigger?.kill();
+				out.kill();
+			});
+		}
+
+		document.addEventListener('astro:before-swap', () => cleanups.forEach((fn) => fn()), { once: true });
+	}
+
+	document.addEventListener('astro:page-load', init);
+</script>

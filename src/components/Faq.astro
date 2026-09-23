@@ -1,0 +1,238 @@
+---
+// One list feeds both the visible questions and the FAQPage schema, so the two can never
+// drift apart — schema that says something the page doesn't is a signal engines discard.
+const FAQS = [
+	{
+		q: 'What does Joel Acosta AI LLC actually do?',
+		a: 'I build the systems a small business runs on: websites and software, automations that take busywork off your team, and lead generation that brings customers in.',
+	},
+	{
+		q: 'Who do you work with?',
+		a: 'Small and mid-sized businesses doing work by hand that a system could do.',
+	},
+	{
+		q: 'Do we need to be technical?',
+		a: 'No. You know your business, I handle the technical side, and your team gets trained on everything I build.',
+	},
+	{
+		q: 'What does it cost?',
+		a: 'The discovery call and roadmap are free. Projects are quoted up front. Retainers are monthly.',
+	},
+	{
+		q: 'Can you help us figure out what we need?',
+		a: "That's what the discovery call is for. Bring the problem and I'll hand you a roadmap.",
+	},
+];
+
+const schema = {
+	'@context': 'https://schema.org',
+	'@type': 'FAQPage',
+	mainEntity: FAQS.map(({ q, a }) => ({
+		'@type': 'Question',
+		name: q,
+		acceptedAnswer: { '@type': 'Answer', text: a },
+	})),
+};
+---
+
+<section class="sec band" id="faq">
+	<h2 class="sec-title" data-lines><span data-line>FAQ's</span></h2>
+
+	<div class="faq" data-rise data-spot>
+		{
+			FAQS.map((f, i) => (
+				<div class="item">
+					<h3 class="q">
+						<button type="button" id={`faq-q-${i + 1}`} aria-expanded="false" aria-controls={`faq-a-${i + 1}`}>
+							<span class="icon" aria-hidden="true" />
+							<span>{f.q}</span>
+						</button>
+					</h3>
+					<div class="a" id={`faq-a-${i + 1}`} aria-labelledby={`faq-q-${i + 1}`}>
+						<div class="clip">
+							<p>{f.a}</p>
+						</div>
+					</div>
+				</div>
+			))
+		}
+	</div>
+</section>
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />
+
+<style>
+	.faq {
+		--hue: var(--accent);
+		--icon: 18px;
+		--gap: 20px;
+		max-width: 860px;
+		margin: 2.6em auto 0;
+		padding: 0.6em 2.4em;
+		background: var(--bg);
+		border: 1px solid var(--line);
+		border-radius: 22px;
+		position: relative;
+	}
+	/* A thread of the accent along the top edge, as on the cards above. */
+	.faq::before {
+		content: '';
+		position: absolute;
+		top: -1px;
+		left: 10%;
+		right: 10%;
+		height: 1px;
+		background: linear-gradient(90deg, transparent, var(--accent), transparent);
+		opacity: 0.6;
+	}
+	.item + .item {
+		border-top: 1px solid var(--line);
+	}
+	.q {
+		margin: 0;
+	}
+	.q button {
+		display: flex;
+		align-items: flex-start;
+		gap: var(--gap);
+		width: 100%;
+		padding: 1.5rem 0;
+		border: 0;
+		background: none;
+		color: var(--fg);
+		font: inherit;
+		font-size: 1.2rem;
+		font-weight: 500;
+		line-height: 1.4;
+		letter-spacing: 0.01em;
+		text-align: left;
+		cursor: pointer;
+		transition: color var(--hover), padding var(--hover);
+	}
+	/* One line tall, so the icon sits on the first line of a question that wraps. */
+	.icon {
+		position: relative;
+		flex: none;
+		width: var(--icon);
+		height: 1.4em;
+		color: color-mix(in srgb, var(--hue) 45%, var(--muted));
+		transition: color var(--hover), transform var(--hover), filter var(--hover);
+	}
+	.icon::before,
+	.icon::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 50%;
+		width: 100%;
+		height: 1.5px;
+		margin-top: -0.75px;
+		background: currentColor;
+	}
+	.icon::after {
+		transform: rotate(90deg);
+	}
+	@media (hover: hover) {
+		.q button:hover {
+			color: var(--head);
+		}
+		.q button:hover .icon {
+			color: var(--hue);
+		}
+	}
+	.q button:focus-visible,
+	.q button:focus-visible .icon {
+		color: var(--head);
+	}
+	/* Keyboard ring in the site's greys, held clear of the icon. */
+	.q button:focus-visible {
+		outline: 1px solid rgba(var(--ink), 0.45);
+		outline-offset: 6px;
+		border-radius: 12px;
+	}
+	.item.open .q button {
+		color: var(--head);
+		/* Pulls the answer up under its question. */
+		padding-bottom: 0.7rem;
+	}
+	.item.open .icon {
+		color: var(--hue);
+		transform: rotate(45deg);
+	}
+
+	/* The answer stays in the page; a 0fr row folds it away and 1fr lets it out. */
+	.a {
+		display: grid;
+		grid-template-rows: 1fr;
+		transition: grid-template-rows var(--hover);
+	}
+	/* Folded only when the script that opens it can run, so nothing is lost without it. */
+	@media (scripting: enabled) {
+		.item:not(.open) .a {
+			grid-template-rows: 0fr;
+		}
+		/* Hidden from screen readers while folded; visibility holds until the fold finishes. */
+		.item:not(.open) .clip {
+			visibility: hidden;
+		}
+	}
+	.clip {
+		overflow: hidden;
+		min-height: 0;
+		transition: visibility var(--hover);
+	}
+	.a p {
+		max-width: 52em;
+		margin: 0;
+		padding: 0 0 1.5rem calc(var(--icon) + var(--gap));
+		color: var(--text);
+		font-size: 1.02rem;
+		line-height: 1.7;
+	}
+
+	@media (max-width: 700px) {
+		.faq {
+			--gap: 14px;
+			padding: 0.4em 1.2em;
+		}
+		.q button {
+			font-size: 1.05rem;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.q button,
+		.icon,
+		.a,
+		.clip {
+			transition: none;
+		}
+	}
+</style>
+
+<script>
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+	gsap.registerPlugin(ScrollTrigger);
+
+	// Delegated and registered once, so it survives view-transition swaps without piling up.
+	// Several answers can be open at once; each question only toggles its own.
+	document.addEventListener('click', (e) => {
+		if (!(e.target instanceof Element)) return;
+		const button = e.target.closest<HTMLButtonElement>('#faq .q button');
+		const item = button?.closest('.item');
+		if (!button || !item) return;
+		const open = button.getAttribute('aria-expanded') !== 'true';
+		button.setAttribute('aria-expanded', String(open));
+		item.classList.toggle('open', open);
+		// Without a transition there is no transitionend to wait for.
+		if (matchMedia('(prefers-reduced-motion: reduce)').matches) ScrollTrigger.refresh();
+	});
+
+	// The page just got taller or shorter; triggers further down (Book) re-measure once it settles.
+	document.addEventListener('transitionend', (e) => {
+		if (e.propertyName !== 'grid-template-rows' || !(e.target instanceof Element)) return;
+		if (e.target.closest('#faq')) ScrollTrigger.refresh();
+	});
+</script>

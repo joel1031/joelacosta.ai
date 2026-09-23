@@ -22,10 +22,19 @@ export default defineConfig({
 	fonts: [
 		{
 			provider: fontProviders.google(),
-			name: 'Geist',
-			cssVariable: '--font-geist',
+			name: 'Inter',
+			cssVariable: '--font-inter',
 			fallbacks: ['sans-serif'],
 			weights: [400, 500],
+			styles: ['normal'],
+		},
+		// Headlines and the J.AI mark only.
+		{
+			provider: fontProviders.google(),
+			name: 'Unbounded',
+			cssVariable: '--font-unbounded',
+			fallbacks: ['sans-serif'],
+			weights: [700],
 			styles: ['normal'],
 		},
 	],

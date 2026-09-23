@@ -1,0 +1,356 @@
+---
+// The five steps every engagement runs through, in order. Step 01 is the call, so the
+// section closes on the button that books it.
+const STEPS = [
+	{
+		title: 'Discovery Call',
+		body: "A free call about your business and what's slowing it down. I demo real systems live, and you leave knowing your biggest win.",
+	},
+	{
+		title: 'Design & Proof of Concept',
+		body: 'I find the bottleneck, design the simplest fix, and build a small working proof before you commit. The roadmap is yours either way.',
+	},
+	{
+		title: 'Build & Test',
+		body: 'The full system, most valuable pieces first, on a timeline we agree on up front.',
+	},
+	{
+		title: 'Launch & Training',
+		body: 'It goes live. I train your team, hand over the docs, and stay close while it settles in.',
+	},
+	{
+		title: 'Partnership & Improvement',
+		body: "Once it's paying for itself, we find the next bottleneck and do it again.",
+	},
+];
+---
+
+<section class="sec band" id="process">
+	<h2 class="sec-title" data-lines>
+		<span data-line>Our Proven</span>
+		<span data-line>Process</span>
+	</h2>
+
+	<div class="timeline">
+		<div class="rail" aria-hidden="true"><div class="fill"></div></div>
+		<ol class="steps">
+			{
+				STEPS.map((s, i) => (
+					<li class="step" data-rise style={`--row: ${i * 2 + 1}`}>
+						<span class="node" aria-hidden="true">
+							{String(i + 1).padStart(2, '0')}
+						</span>
+						<div class="card" data-spot>
+							<h3>{s.title}</h3>
+							<p>{s.body}</p>
+						</div>
+					</li>
+				))
+			}
+		</ol>
+	</div>
+
+	<div class="end" data-rise>
+		<button class="cta-book" type="button" data-calendly>Book a Discovery Call</button>
+	</div>
+</section>
+
+<style>
+	.timeline {
+		--hue: var(--accent);
+		/* Badge height on the line: level with the middle of the card title's first line. */
+		--pad: 1.6rem;
+		--title: 1.05rem;
+		--node-y: calc(var(--pad) + var(--edge) + var(--title) * 1.3 / 2);
+		--edge: 2px;
+		--badge: 46px;
+		--r: calc(var(--badge) / 2);
+		--gap: 56px;
+		position: relative;
+		max-width: 1040px;
+		margin: 4.5em auto 0;
+	}
+	.rail {
+		position: absolute;
+		top: var(--node-y);
+		bottom: 0;
+		left: 50%;
+		width: 1px;
+		margin-left: -0.5px;
+		background: var(--line);
+	}
+	/* The gradient is sized to the whole rail (--rail, set by the script), so as the fill
+	   grows each colour stays level with its step instead of stretching. */
+	.fill {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(to bottom, var(--ice), var(--blue)) top / 100% var(--rail, 100%) no-repeat;
+	}
+	/* The glow is a blurred copy of the line, so it shifts colour along with it and softens
+	   at the tip. */
+	.fill::after {
+		content: '';
+		position: absolute;
+		inset: 0 -3px;
+		background: inherit;
+		filter: blur(4px);
+		opacity: 0.4;
+	}
+	/* On white the same blur reads as a haze; keep only a trace so the line stays crisp. */
+	:global([data-theme='light']) .fill::after {
+		filter: blur(3px);
+		opacity: 0.18;
+	}
+	.steps {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	/* Odd steps sit left of the line, even steps right. Every step spans three equal rows
+	   and starts two rows below the one before, so the badges step evenly however long each
+	   step's copy runs, and every card stretches to the tallest. */
+	.steps {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-auto-rows: 1fr;
+	}
+	.step {
+		position: relative;
+		grid-row: var(--row) / span 3;
+		grid-column: 1;
+		display: flex;
+		flex-direction: column;
+		padding-right: var(--gap);
+	}
+	.step:nth-child(even) {
+		grid-column: 2;
+		padding-right: 0;
+		padding-left: var(--gap);
+	}
+	/* The step number, on the line. Opaque, so the line runs behind it. */
+	.node {
+		position: absolute;
+		top: var(--node-y);
+		right: 0;
+		display: grid;
+		place-items: center;
+		width: var(--badge);
+		height: var(--badge);
+		margin: calc(var(--r) * -1) calc(var(--r) * -1) 0 0;
+		border: 1px solid var(--hue);
+		border-radius: 50%;
+		background: var(--bg);
+		box-shadow: 0 0 0 4px color-mix(in srgb, var(--hue) 10%, var(--bg));
+		color: var(--hue);
+		font-family: var(--font-unbounded), sans-serif;
+		font-weight: 700;
+		font-size: 0.95rem;
+		line-height: 1;
+		transition: border-color var(--hover), box-shadow var(--hover), color var(--hover);
+	}
+	.step:nth-child(even) .node {
+		right: auto;
+		left: 0;
+		margin: calc(var(--r) * -1) 0 0 calc(var(--r) * -1);
+	}
+	/* A short tick from the badge to its card. */
+	.step::before {
+		content: '';
+		position: absolute;
+		top: var(--node-y);
+		right: var(--r);
+		width: calc(var(--gap) - var(--r));
+		height: 1px;
+		background: color-mix(in srgb, var(--hue) 45%, var(--line));
+		transition: background var(--hover);
+	}
+	.step:nth-child(even)::before {
+		right: auto;
+		left: var(--r);
+	}
+
+	.card {
+		flex: 1;
+		border: var(--edge) solid color-mix(in srgb, var(--hue) 50%, var(--line));
+		border-radius: 8px;
+		background: var(--bg);
+		padding: var(--pad) 1.6rem 1.5rem;
+		box-shadow: 0 1px 2px rgba(var(--ink), 0.04), 0 16px 32px -20px rgba(var(--ink), 0.18);
+		transition: border-color var(--hover);
+	}
+	.card h3 {
+		margin: 0 0 0.7em;
+		font-family: var(--font-unbounded), sans-serif;
+		font-weight: 700;
+		font-size: var(--title);
+		line-height: 1.3;
+		letter-spacing: 0;
+		text-transform: uppercase;
+		color: var(--head);
+	}
+	.card p {
+		max-width: 34em;
+		margin: 0;
+		color: var(--text);
+		font-size: 1.02rem;
+		line-height: 1.65;
+	}
+
+	/* Lit is the resting state, so it holds without JavaScript and under reduced motion.
+	   Once the script drives the line, a step stays dim until the fill reaches its badge. */
+	.timeline.live .step:not(.lit) .node {
+		border-color: var(--faint);
+		box-shadow: none;
+		color: var(--faint);
+	}
+	.timeline.live .step:not(.lit)::before {
+		background: var(--line);
+	}
+	.timeline.live .step:not(.lit) .card {
+		border-color: var(--line);
+	}
+
+	.end {
+		margin-top: 3.5em;
+		text-align: center;
+	}
+	.end .cta-book {
+		padding: 0.85em 2.1em;
+		font-size: 1.1rem;
+	}
+
+	/* Phones: the line moves to the left edge, in far enough that the badges fit, and every
+	   step sits to its right. */
+	@media (max-width: 760px) {
+		.timeline {
+			--pad: 1.3rem;
+			--title: 0.98rem;
+			--badge: 36px;
+			--gap: 50px;
+			--x: var(--r);
+			margin-top: 3em;
+		}
+		.rail {
+			left: var(--x);
+		}
+		.steps {
+			display: block;
+		}
+		.step,
+		.step:nth-child(even) {
+			padding-right: 0;
+			padding-left: var(--gap);
+		}
+		.step + .step {
+			margin-top: 1.1rem;
+		}
+		.node,
+		.step:nth-child(even) .node {
+			right: auto;
+			left: var(--x);
+			margin: calc(var(--r) * -1) 0 0 calc(var(--r) * -1);
+			font-size: 0.78rem;
+		}
+		.step::before,
+		.step:nth-child(even)::before {
+			right: auto;
+			left: calc(var(--x) + var(--r));
+			width: calc(var(--gap) - var(--x) - var(--r));
+		}
+		.card {
+			padding: var(--pad) 1.2rem 1.3rem;
+		}
+	}
+</style>
+
+<script>
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+	gsap.registerPlugin(ScrollTrigger);
+
+	function init() {
+		const line = document.querySelector<HTMLElement>('#process .timeline');
+		if (!line) return;
+
+		const rail = line.querySelector<HTMLElement>('.rail')!;
+		const fill = line.querySelector<HTMLElement>('.fill')!;
+		const steps = [...line.querySelectorAll<HTMLElement>('.step')];
+
+		// The line stops at the last node instead of running on beside the last card. Layout
+		// offsets, so the rise-in transforms don't skew it.
+		const fit = () => {
+			const last = steps[steps.length - 1];
+			const node = last.querySelector<HTMLElement>('.node')!;
+			const end = last.offsetTop + node.offsetTop + node.offsetHeight / 2;
+			const h = Math.max(0, end - rail.offsetTop);
+			rail.style.bottom = 'auto';
+			rail.style.height = `${h}px`;
+			rail.style.setProperty('--rail', `${h}px`);
+		};
+		fit();
+		const resize = new ResizeObserver(() => {
+			fit();
+			ScrollTrigger.refresh();
+		});
+		resize.observe(line);
+
+		// Reduced motion keeps the stylesheet's finished state: line drawn, every step lit.
+		if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			document.addEventListener('astro:before-swap', () => resize.disconnect(), { once: true });
+			return;
+		}
+
+		// Layout offsets, not screen rects, so a step still rising into place lights on time.
+		const paint = (p: number) => {
+			const tip = rail.offsetTop + p * rail.offsetHeight;
+			steps.forEach((step) => {
+				const node = step.querySelector<HTMLElement>('.node')!;
+				step.classList.toggle('lit', step.offsetTop + node.offsetTop + node.offsetHeight / 2 <= tip + 1);
+			});
+		};
+
+		line.classList.add('live');
+		// The tip of the fill rides a fixed line two thirds down the screen.
+		const draw = gsap.fromTo(
+			fill,
+			{ height: '0%' },
+			{
+				height: '100%',
+				ease: 'none',
+				scrollTrigger: {
+					trigger: rail,
+					start: 'top 65%',
+					end: 'bottom 65%',
+					scrub: true,
+					// Drawn once, it stays drawn: the trigger retires at the end.
+					once: true,
+					onUpdate: (self) => paint(self.progress),
+					onRefresh: (self) => paint(self.progress),
+					// A fast scroll past the end can skip the last update.
+					onLeave: () => paint(1),
+				},
+			},
+		);
+		paint(draw.scrollTrigger?.progress ?? 0);
+
+		document.addEventListener(
+			'astro:before-swap',
+			() => {
+				resize.disconnect();
+				draw.scrollTrigger?.kill();
+				draw.kill();
+				gsap.set(fill, { clearProps: 'height' });
+				line.classList.remove('live');
+				steps.forEach((s) => s.classList.remove('lit'));
+			},
+			{ once: true },
+		);
+	}
+
+	document.addEventListener('astro:page-load', init);
+</script>

@@ -1,0 +1,154 @@
+---
+// The one navigation: J.AI centered, section links right. Fixed to the top. On small
+// screens the links move into a full-screen drawer behind a menu button.
+// mode="always" — visible from the start (every page but home).
+// mode="hero"   — hidden until the hero has scrolled away (home).
+interface Props {
+	mode?: 'always' | 'hero';
+}
+
+const { mode = 'always' } = Astro.props;
+
+const LINKS = [
+	{ href: '/#about', label: 'About' },
+	{ href: '/#process', label: 'Process' },
+	{ href: '/#pricing', label: 'Pricing' },
+	{ href: '/#faq', label: 'FAQ' },
+];
+---
+
+<nav class:list={['bar', { on: mode === 'always' }]} data-mode={mode} aria-label="Site" transition:name="site-bar">
+	<button class="menu" type="button" aria-label="Menu" data-menu><span></span><span></span></button>
+	<a class="brand" href="/">J.AI</a>
+	<span class="links">
+		{LINKS.map((l) => <a class="w" href={l.href}>{l.label}</a>)}
+		<button class="cta-book" type="button" data-calendly><span>Book a <span class="long">Discovery</span> Call</span></button>
+	</span>
+</nav>
+{mode === 'always' && <div class="bar-spacer" aria-hidden="true"></div>}
+
+<div class="drawer" id="drawer" aria-label="Menu">
+	<button class="menu" type="button" aria-label="Close menu" data-menu><span></span><span></span></button>
+	{LINKS.map((l) => <a href={l.href}>{l.label}</a>)}
+	<button class="cta-book" type="button" data-calendly>Book a Discovery Call</button>
+</div>
+
+<style>
+	.bar {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 8;
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+		padding: calc(16px + env(safe-area-inset-top, 0px)) clamp(16px, 3vw, 40px) 16px;
+		font-size: 0.9rem;
+		letter-spacing: 0.02em;
+		background: rgba(var(--veil), 0.72);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		border-bottom: 1px solid var(--line);
+		opacity: 0;
+		transform: translateY(-100%);
+		pointer-events: none;
+		transition: opacity var(--anim-dur) var(--anim-ease), transform var(--anim-dur) var(--anim-ease);
+	}
+	.bar.on {
+		opacity: 1;
+		transform: none;
+		pointer-events: auto;
+	}
+	.bar-spacer {
+		height: calc(57px + env(safe-area-inset-top, 0px));
+	}
+	.bar .menu {
+		grid-column: 1;
+		justify-self: start;
+		margin-left: -8px;
+	}
+	.brand {
+		grid-column: 2;
+		font-family: var(--font-unbounded), sans-serif;
+		font-weight: 700;
+		text-transform: uppercase;
+		font-size: 1.05em;
+		color: var(--fg);
+		transition: text-shadow var(--hover), color var(--hover);
+	}
+	.links {
+		grid-column: 3;
+		justify-self: end;
+		display: flex;
+		align-items: center;
+		gap: 2.2em;
+	}
+	.w {
+		color: var(--text);
+		transition: color var(--hover), text-shadow var(--hover);
+	}
+	.w:hover,
+	.brand:hover {
+		color: var(--head);
+		text-shadow: var(--glow);
+	}
+	/* The section links need the room on either side of the centred J.AI; below that they
+	   live in the drawer. */
+	@media (max-width: 1100px) {
+		.w {
+			display: none;
+		}
+		.bar .menu {
+			display: grid;
+		}
+	}
+	@media (max-width: 700px) {
+		.bar {
+			font-size: 0.8rem;
+		}
+		.links {
+			gap: 1em;
+		}
+		.links .cta-book {
+			padding: 0.65em 1.3em;
+			font-size: 0.85rem;
+		}
+	}
+	@media (max-width: 480px) {
+		.long {
+			display: none;
+		}
+	}
+</style>
+
+<script>
+	// The drawer opens from any [data-menu] button (the bar's or the hero's) and closes on a
+	// link, the close button or Escape. Delegated and registered once, so it survives
+	// view-transition swaps; the open state lives on <body>, which every swap replaces.
+	const toggle = (open?: boolean) => document.body.classList.toggle('menu-open', open);
+	document.addEventListener('click', (e) => {
+		if (!(e.target instanceof Element)) return;
+		if (e.target.closest('[data-menu]')) return void toggle();
+		if (e.target.closest('#drawer a, #drawer [data-calendly]')) toggle(false);
+	});
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape') toggle(false);
+	});
+
+	// The bar rides in once the home hero is gone. Re-armed on every client-side navigation,
+	// since page scripts do not re-run across view-transition swaps.
+	function arm() {
+		const bar = document.querySelector<HTMLElement>('.bar[data-mode="hero"]');
+		if (!bar) return;
+		// Only once the hero is all covered: the see-through white bar over the dark hero reads
+		// as grey. The hero is stuck in place, so the page sliding over it (`.sheet`) is what
+		// is measured; its top reaching the top of the screen means the hero is gone.
+		const sheet = document.querySelector('.sheet');
+		const check = () => bar.classList.toggle('on', (sheet?.getBoundingClientRect().top ?? 0) <= 0);
+		check();
+		window.addEventListener('scroll', check, { passive: true });
+		document.addEventListener('astro:before-swap', () => window.removeEventListener('scroll', check), { once: true });
+	}
+	document.addEventListener('astro:page-load', arm);
+</script>

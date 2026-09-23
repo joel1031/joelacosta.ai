@@ -1,28 +1,8 @@
 /*
-  Minimal Tetragrammaton-style theme.
-  Two modes via [data-theme]; default dark.
+  Dark by default; a page can ask for the white version with Layout's `theme="light"`
+  (the homepage does). Components use the tokens below, never raw greys, so one attribute
+  on <html> flips the whole page. --faint is for hairlines and dim marks, not words.
 */
-
-:root,
-:root[data-theme='dark'] {
-	--bg: #0a0a0a;
-	--fg: #e8e8e8;
-	--muted: #8a8a8a;
-	--faint: #3a3a3a;
-	--line: #1c1c1c;
-	/* Header underline: original subtle line in dark mode. */
-	--header-line: var(--line);
-}
-
-:root[data-theme='light'] {
-	--bg: #f7f7f5;
-	--fg: #141414;
-	--muted: #3f3f3f;
-	--faint: #7c7c78;
-	--line: #c3c3bc;
-	/* Header underline: matches the text in light mode. */
-	--header-line: var(--fg);
-}
 
 :root {
 	/* Shared content container width for play / look / read. */
@@ -33,6 +13,68 @@
 	--anim-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 	/* Slower, unhurried duration for page navigation morphs. */
 	--morph-dur: 0.85s;
+	/* Hovers ease in and out; presses ease in. */
+	--hover: 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+	--press: 0.35s cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* Colour. Dark is the default; any element can also ask for it with data-theme="dark",
+   which is how the home hero stays dark on the white homepage. */
+:root,
+[data-theme='dark'] {
+	--bg: #0a0a0a;
+	--fg: #e8e8e8;
+	/* Headings and anything that must stand out most. */
+	--head: #fff;
+	/* Body copy in cards and lists. */
+	--text: #c9c9c9;
+	--muted: #a3a3a3;
+	--faint: #3a3a3a;
+	--line: #1c1c1c;
+	--header-line: var(--line);
+	/* A raised surface (the FAQ box) and the mockup tiles. */
+	--panel: #111;
+	--tile: #0d0d0d;
+	/* RGB triplets, for see-through layers: --veil is the page colour (bar, scrims),
+	   --ink the text colour (hairline borders), --shade what keeps words readable over photos. */
+	--veil: 10, 10, 10;
+	--ink: 255, 255, 255;
+	--shade: 0, 0, 0;
+
+	/* One accent family, blue to light blue. Accents only; words stay in the greys. */
+	--ice: #b4e1ff;
+	--accent: #7cc2ff;
+	--blue: #4b93ff;
+	/* Hover on text: a soft lift, not a halo. */
+	--glow: 0 0 10px rgba(255, 255, 255, 0.35);
+	/* The Book a Discovery Call pill. */
+	--cta-bg: rgba(10, 10, 10, 0.6);
+	--cta-fg: #fff;
+	--cta-edge: rgba(255, 255, 255, 0.55);
+}
+
+/* The white page: the same system, inverted. Blues deepen so they hold up on white.
+   Comes after the dark block so it wins on <html>, which also matches :root. */
+[data-theme='light'] {
+	--bg: #fff;
+	--fg: #1a1a1a;
+	--head: #0a0a0a;
+	--text: #3f3f3f;
+	--muted: #6b6b6b;
+	--faint: #c9c9c9;
+	--line: #e6e6e6;
+	--panel: #f6f6f6;
+	--tile: #fafafa;
+	--veil: 255, 255, 255;
+	--ink: 0, 0, 0;
+	--shade: 255, 255, 255;
+	--ice: #6db4ff;
+	--accent: #2e86ec;
+	--blue: #1b5fd6;
+	--glow: 0 0 10px rgba(46, 134, 236, 0.25);
+	--cta-bg: #0a0a0a;
+	--cta-fg: #fff;
+	--cta-edge: #0a0a0a;
 }
 
 * {
@@ -44,10 +86,11 @@ html {
 }
 
 body {
-	font-family: var(--font-geist), sans-serif;
+	font-family: var(--font-inter), sans-serif;
 	margin: 0;
 	padding: 0;
-	background: var(--bg);
+	/* Transparent so the cursor light, which sits behind the content, shows through. */
+	background: transparent;
 	color: var(--fg);
 	font-size: 16px;
 	line-height: 1.7;
@@ -56,7 +99,34 @@ body {
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	-webkit-font-smoothing: antialiased;
-	transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* A soft light trailing the pointer, behind everything on the page.
+   Laptops only: no pointer on phones, and it is switched off for reduced motion. */
+#cursor-light {
+	position: fixed;
+	z-index: -1;
+	top: 0;
+	left: 0;
+	width: 46rem;
+	height: 46rem;
+	margin: -23rem 0 0 -23rem;
+	pointer-events: none;
+	opacity: 0;
+	background: radial-gradient(circle closest-side, rgba(var(--ink), 0.06), rgba(var(--ink), 0));
+	transition: opacity 0.6s ease;
+	will-change: transform;
+}
+:root[data-theme='light'] #cursor-light {
+	background: radial-gradient(circle closest-side, rgba(46, 134, 236, 0.07), rgba(46, 134, 236, 0));
+}
+#cursor-light.on {
+	opacity: 1;
+}
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+	#cursor-light {
+		display: none;
+	}
 }
 
 a {
@@ -198,10 +268,10 @@ p {
 		animation: none;
 	}
 }
-/* The header is its own group and does not animate — it stays still. */
-::view-transition-group(site-header),
-::view-transition-old(site-header),
-::view-transition-new(site-header) {
+/* The bar is its own group and does not animate — it stays still. */
+::view-transition-group(site-bar),
+::view-transition-old(site-bar),
+::view-transition-new(site-bar) {
 	animation: none;
 }
 /* The name and tabs morph (move + resize) between the home hero and the header. */
@@ -223,4 +293,251 @@ p {
 	::view-transition-new(brand-tabs) {
 		animation: none;
 	}
+}
+
+/* Cards that light up under the pointer, in their own hue (`--hue`, the accent by default).
+   Layout.astro feeds the pointer position in as --mx / --my. Laptops only. */
+[data-spot] {
+	position: relative;
+}
+[data-spot]::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	pointer-events: none;
+	opacity: 0;
+	background: radial-gradient(
+		380px circle at var(--mx, 50%) var(--my, 50%),
+		color-mix(in srgb, var(--hue, var(--accent)) 8%, transparent),
+		transparent 65%
+	);
+	transition: opacity var(--hover);
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+	[data-spot]:hover::after {
+		opacity: 1;
+	}
+}
+
+/* The small-screen menu: a two-line button in the bar and the hero, and one full-screen
+   drawer (Bar.astro) that either opens. `menu-open` sits on <body>, which every page
+   swap replaces, so a navigation always closes it. */
+.menu {
+	display: none;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: inherit;
+	cursor: pointer;
+	place-content: center;
+	gap: 5px;
+}
+.menu span {
+	display: block;
+	width: 20px;
+	height: 1.5px;
+	background: currentColor;
+	transition: transform var(--hover), opacity var(--hover);
+}
+body.menu-open {
+	overflow: hidden;
+}
+.drawer {
+	position: fixed;
+	inset: 0;
+	z-index: 9;
+	display: grid;
+	place-content: center;
+	gap: 0.6em;
+	padding: 24px;
+	background: var(--bg);
+	color: var(--fg);
+	text-align: center;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity var(--anim-dur) var(--anim-ease), visibility 0s var(--anim-dur);
+}
+body.menu-open .drawer {
+	opacity: 1;
+	visibility: visible;
+	transition-delay: 0s, 0s;
+}
+.drawer a {
+	padding: 0.35em 0.5em;
+	color: var(--head);
+	font-family: var(--font-unbounded), sans-serif;
+	font-weight: 700;
+	font-size: clamp(1.4rem, 6vw, 2rem);
+	text-transform: uppercase;
+	transition: color var(--hover), text-shadow var(--hover);
+}
+.drawer a:hover {
+	text-shadow: var(--glow);
+}
+.drawer .cta-book {
+	justify-self: center;
+	margin-top: 1.4em;
+	padding: 0.85em 2.1em;
+	font-size: 1.05rem;
+}
+.drawer .menu {
+	position: absolute;
+	top: calc(12px + env(safe-area-inset-top, 0px));
+	right: 12px;
+	display: grid;
+}
+.drawer .menu span:first-child {
+	transform: translateY(3.25px) rotate(45deg);
+}
+.drawer .menu span:last-child {
+	transform: translateY(-3.25px) rotate(-45deg);
+}
+
+/* Homepage sections below the hero share one rhythm and one heading style. */
+.sec {
+	padding: 14vh clamp(16px, 5vw, 64px) 0;
+}
+/* Every other section sits on a band: the panel grey under a faint field of the hero's dots,
+   which thin out toward the band's edges so it never reads as a hard stripe. */
+.band {
+	position: relative;
+	isolation: isolate;
+	margin-top: 10vh;
+	padding-bottom: 14vh;
+	background: var(--panel);
+}
+.band::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: radial-gradient(circle, rgba(var(--ink), 0.09) 1px, transparent 1.4px) 0 0 / 16px 16px;
+	-webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+	mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+	pointer-events: none;
+}
+/* Headings start their reveal scaled up; clipped so that never widens the page on a phone. */
+.sec,
+#about {
+	overflow-x: clip;
+}
+.sec-title {
+	margin: 0 auto;
+	max-width: 20ch;
+	text-align: center;
+	text-wrap: balance;
+	color: var(--head);
+	font-family: var(--font-unbounded), sans-serif;
+	font-weight: 700;
+	font-size: clamp(1.6rem, 3vw + 0.4rem, 2.6rem);
+	line-height: 1.05;
+	letter-spacing: 0;
+	word-spacing: 0.12em;
+	text-transform: uppercase;
+}
+.sec-title [data-line] {
+	display: block;
+}
+.sec-lede {
+	max-width: 36em;
+	margin: 1.3em auto 0;
+	text-align: center;
+	text-wrap: pretty;
+	color: var(--muted);
+	font-size: 1.1rem;
+	line-height: 1.6;
+}
+
+/* The one call to action: Book a Discovery Call, wherever it appears. */
+@property --cta-angle {
+	syntax: '<angle>';
+	initial-value: 0deg;
+	inherits: false;
+}
+.cta-book {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	padding: 0.75em 1.8em;
+	border: 1px solid var(--cta-edge);
+	border-radius: 999px;
+	background: var(--cta-bg);
+	color: var(--cta-fg);
+	font: inherit;
+	font-size: 0.95rem;
+	letter-spacing: 0.02em;
+	cursor: pointer;
+	white-space: nowrap;
+	box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 22%, transparent), inset 0 0 8px rgba(var(--ink), 0.05);
+	transition: box-shadow var(--hover), color var(--hover), border-color var(--hover);
+}
+/* A bright segment runs the frame, drawn as a conic gradient in the border area only. */
+.cta-book::before {
+	content: '';
+	position: absolute;
+	inset: -1px;
+	border-radius: 999px;
+	padding: 1px;
+	background: conic-gradient(
+		from var(--cta-angle),
+		transparent 0deg,
+		transparent 260deg,
+		var(--ice) 320deg,
+		transparent 360deg
+	);
+	-webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+	-webkit-mask-composite: xor;
+	mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+	mask-composite: exclude;
+	animation: cta-travel 4s linear infinite;
+	pointer-events: none;
+}
+@keyframes cta-travel {
+	to {
+		--cta-angle: 360deg;
+	}
+}
+.cta-book:active {
+	color: #bdbdbd;
+	border-color: #7a7a7a;
+	box-shadow: 0 0 6px rgba(255, 255, 255, 0.08);
+	text-shadow: none;
+	transition: var(--press);
+}
+@media (prefers-reduced-motion: reduce) {
+	.cta-book::before {
+		animation: none;
+	}
+}
+
+/* The quieter pill, for secondary actions next to a .cta-book. Glows only on hover. */
+.cta-ghost {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.75em 1.8em;
+	border: 1px solid rgba(var(--ink), 0.28);
+	border-radius: 999px;
+	background: transparent;
+	color: var(--fg);
+	font: inherit;
+	font-size: 0.95rem;
+	letter-spacing: 0.02em;
+	cursor: pointer;
+	white-space: nowrap;
+	transition: box-shadow var(--hover), color var(--hover), border-color var(--hover), text-shadow var(--hover);
+}
+.cta-ghost:hover {
+	color: var(--head);
+	border-color: rgba(var(--ink), 0.55);
+	box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.cta-ghost:active {
+	color: #bdbdbd;
+	border-color: #7a7a7a;
+	box-shadow: none;
+	text-shadow: none;
+	transition: var(--press);
 }

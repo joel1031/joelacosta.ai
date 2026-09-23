@@ -2,48 +2,120 @@
 import type { ImageMetadata } from 'astro';
 import { ClientRouter } from 'astro:transitions';
 import BaseHead from '../components/BaseHead.astro';
-import Nav from '../components/Nav.astro';
+import Bar from '../components/Bar.astro';
+import Footer from '../components/Footer.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
 interface Props {
 	title?: string;
 	description?: string;
 	image?: ImageMetadata;
-	nav?: boolean;
+	/* 'hero' keeps the bar hidden until the home hero has scrolled away. */
+	bar?: 'always' | 'hero';
+	footer?: boolean;
+	/* 'light' puts the page on white (see :root[data-theme='light'] in global.css). */
+	theme?: 'dark' | 'light';
 }
 
 const {
 	title = SITE_TITLE,
 	description = SITE_DESCRIPTION,
 	image,
-	nav = true,
+	bar = 'always',
+	footer = true,
+	theme = 'dark',
 } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme={theme}>
 	<head>
 		<BaseHead title={title} description={description} image={image} />
 		<ClientRouter />
-		<script is:inline>
-			// Set theme before paint to avoid a flash. Default: dark.
-			// Re-applied after view-transition swaps, which reset <html> attributes.
-			(function () {
-				function apply() {
-					try {
-						var t = localStorage.getItem('theme');
-						document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark');
-					} catch (e) {
-						document.documentElement.setAttribute('data-theme', 'dark');
-					}
-				}
-				apply();
-				document.addEventListener('astro:after-swap', apply);
-			})();
-		</script>
 	</head>
 	<body>
-		{nav && <Nav />}
+		<Bar mode={bar} />
 		<slot />
+		{footer && <Footer />}
+		<script>
+			import { CALENDLY_URL } from '../consts';
+			import { openCalendly } from '../scripts/calendly';
+
+			// Book a call opens Calendly over the page. Delegated, so it survives page swaps.
+			document.addEventListener('click', (e) => {
+				const el = e.target instanceof Element ? e.target.closest('[data-calendly]') : null;
+				if (!el) return;
+				e.preventDefault();
+				openCalendly(CALENDLY_URL);
+			});
+		</script>
+		<script is:inline>
+			// Links to a section of the page you are already on glide there rather than jump.
+			// Per click, never page-wide: a page-wide smooth scroll fights the scroll-driven
+			// animations. Capture phase, so it runs before the client router sees the click.
+			document.addEventListener(
+				'click',
+				function (e) {
+					var a = e.target.closest && e.target.closest('a[href*="#"]');
+					if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+					var url = new URL(a.href, location.href);
+					if (url.pathname !== location.pathname || !url.hash) return;
+					var target = document.getElementById(decodeURIComponent(url.hash.slice(1)));
+					if (!target) return;
+					e.preventDefault();
+					var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+					target.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' });
+				},
+				true,
+			);
+		</script>
+		<script>
+			// Soft light trailing the pointer, behind the page. The element lives in <body>,
+			// which client-side navigation replaces, so it is re-created after each swap.
+			const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+			const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+			if (fine && !still) {
+				let light: HTMLElement | null = null;
+				let x = innerWidth / 2;
+				let y = innerHeight / 2;
+				let cx = x;
+				let cy = y;
+				let running = false;
+
+				const mount = () => {
+					light = document.createElement('div');
+					light.id = 'cursor-light';
+					document.body.appendChild(light);
+					light.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+				};
+
+				const frame = () => {
+					cx += (x - cx) * 0.12;
+					cy += (y - cy) * 0.12;
+					if (light) light.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+					if (Math.abs(x - cx) > 0.5 || Math.abs(y - cy) > 0.5) requestAnimationFrame(frame);
+					else running = false;
+				};
+
+				document.addEventListener('pointermove', (e) => {
+					x = e.clientX;
+					y = e.clientY;
+					// The card under the pointer lights where the pointer is (see [data-spot]).
+					const spot = e.target instanceof Element ? e.target.closest<HTMLElement>('[data-spot]') : null;
+					if (spot) {
+						const r = spot.getBoundingClientRect();
+						spot.style.setProperty('--mx', `${x - r.left}px`);
+						spot.style.setProperty('--my', `${y - r.top}px`);
+					}
+					if (light) light.classList.add('on');
+					if (!running) {
+						running = true;
+						requestAnimationFrame(frame);
+					}
+				});
+				document.addEventListener('astro:after-swap', mount);
+				mount();
+			}
+		</script>
 	</body>
 </html>
