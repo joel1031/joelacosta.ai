@@ -34,7 +34,7 @@ const sources = photos.map((p) => p.src);
 
 	<div class="copy" id="hero-copy">
 		<p class="llc" id="hero-llc">{COMPANY}</p>
-		<h1 class="h"><span id="hero-name">joelacosta.ai</span></h1>
+		<h1 class="h"><span id="hero-name">joelacosta<span class="tld">.ai</span></span></h1>
 		<ul class="pillars" id="hero-pillars">
 			<li>GTM</li>
 			<li class="sep" aria-hidden="true">·</li>
@@ -158,6 +158,10 @@ const sources = photos.map((p) => p.src);
 	}
 	.h:hover {
 		text-shadow: 0 0 16px rgba(var(--ink), 0.3);
+	}
+	/* The one blue, as on the link-preview card. */
+	.tld {
+		color: var(--accent);
 	}
 	/* Middle pillar pinned to the exact centre: equal flexible side columns. */
 	.pillars {

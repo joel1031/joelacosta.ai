@@ -4,7 +4,7 @@
 import '../styles/global.css';
 import type { ImageMetadata } from 'astro';
 import { Font, getImage } from 'astro:assets';
-import { galleryByName } from '../gallery';
+import ogHome from '../assets/og-home.png';
 import { SITE_TITLE } from '../consts';
 
 interface Props {
@@ -18,11 +18,10 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const { title, description, image } = Astro.props;
 
 // Every link previews with a picture: a page's own image when it has one, the
-// Birds photo otherwise. Resized to the 1.91:1 card ratio — the gallery
-// originals run ~8000px wide, past what scrapers will fetch.
-const ogSource = image ?? galleryByName.get('Birds');
+// site card otherwise. Resized to the 1.91:1 card ratio.
+const ogSource = image ?? ogHome;
 const ogImage = ogSource
-	? await getImage({ src: ogSource, width: 1200, height: 630, fit: 'cover', format: 'jpeg' })
+	? await getImage({ src: ogSource, width: 1200, height: 630, fit: 'cover', format: 'png' })
 	: undefined;
 ---
 

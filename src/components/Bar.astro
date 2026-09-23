@@ -1,5 +1,5 @@
 ---
-// The one navigation: J.AI centered, section links right, and the call button, which goes
+// The one navigation: the temple mark centered, section links right, and the call button, which goes
 // to the booking section rather than opening the calendar over the page. Fixed to the top.
 // On small screens the links move into a full-screen drawer behind a menu button.
 // mode="always" — visible from the start (every page but home).
@@ -20,7 +20,11 @@ const LINKS = [
 
 <nav class:list={['bar', { on: mode === 'always' }]} data-mode={mode} aria-label="Site" transition:name="site-bar">
 	<button class="menu" type="button" aria-label="Menu" data-menu><span></span><span></span></button>
-	<a class="brand" href="/">J.AI</a>
+	<a class="brand" href="/" aria-label="Home">
+		<svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<path d="M3 9.5 12 3.5l9 6" /><path d="M4.5 11h15" /><path d="M7 13v6M12 13v6M17 13v6" /><path d="M3 21.5h18" />
+		</svg>
+	</a>
 	<span class="links">
 		{LINKS.map((l) => <a class="w" href={l.href}>{l.label}</a>)}
 		<a class="cta-book" href="/#book"><span>Book a <span class="long">Discovery</span> Call</span></a>
@@ -71,12 +75,17 @@ const LINKS = [
 	}
 	.brand {
 		grid-column: 2;
-		font-family: var(--font-unbounded), sans-serif;
-		font-weight: 700;
-		text-transform: uppercase;
-		font-size: 1.05em;
+		display: grid;
+		place-items: center;
+		width: 44px;
+		height: 44px;
+		margin-block: -10px;
 		color: var(--fg);
-		transition: text-shadow var(--hover), color var(--hover);
+		transition: filter var(--hover), color var(--hover);
+	}
+	.mark {
+		width: 26px;
+		height: 26px;
 	}
 	.links {
 		grid-column: 3;
@@ -89,12 +98,15 @@ const LINKS = [
 		color: var(--text);
 		transition: color var(--hover), text-shadow var(--hover);
 	}
-	.w:hover,
-	.brand:hover {
+	.w:hover {
 		color: var(--head);
 		text-shadow: var(--glow);
 	}
-	/* The section links need the room on either side of the centred J.AI; below that they
+	.brand:hover {
+		color: var(--head);
+		filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 45%, transparent));
+	}
+	/* The section links need the room on either side of the centred mark; below that they
 	   live in the drawer. */
 	@media (max-width: 1100px) {
 		.w {
