@@ -1,36 +1,48 @@
 ---
-// The calendar itself, in the page. Nothing else: the sections above have made the case.
-import { CALENDLY_URL } from '../consts';
+// The calendar itself, in the page, under one heading.
+import { CAL_LINK } from '../consts';
 ---
 
 <section class="sec book" id="book">
-	<div class="cal" id="calendly" data-url={CALENDLY_URL}></div>
+	<h2 class="sec-title" data-lines>
+		<span data-line>Book a</span>
+		<span data-line>Discovery Call</span>
+	</h2>
+	<div class="cal" id="cal" data-link={CAL_LINK}></div>
 </section>
 
 <style>
+	#book {
+		scroll-margin-top: 56px;
+	}
 	.cal {
-		/* Calendly's loading dots are placed against the nearest positioned box; without this
-		   they land half-way down the page, in the pricing section. */
 		position: relative;
-		max-width: 1040px;
-		margin: 0 auto;
-		/* Room for the calendar before Calendly sizes its own frame. */
+		max-width: 1280px;
+		margin: 3.5em auto 0;
+		/* Room for the calendar before Cal.com sizes its own frame. */
 		min-height: 700px;
+	}
+	/* Cal.com caps its own width at about 1040px, so on big screens the frame is scaled up
+	   as a whole instead, type included. */
+	@media (min-width: 1200px) {
+		.cal {
+			zoom: 1.18;
+		}
 	}
 </style>
 
 <script>
-	import { embedCalendly } from '../scripts/calendly';
+	import { embedCal } from '../scripts/cal';
 
-	// The widget is fetched as the section nears the screen, not on page load.
+	// The embed is fetched as the section nears the screen, not on page load.
 	function init() {
-		const el = document.querySelector<HTMLElement>('#calendly');
+		const el = document.querySelector<HTMLElement>('#cal');
 		if (!el) return;
 		const io = new IntersectionObserver(
 			(entries) => {
 				if (!entries.some((e) => e.isIntersecting)) return;
 				io.disconnect();
-				embedCalendly(el, el.dataset.url!);
+				embedCal(el, el.dataset.link!);
 			},
 			{ rootMargin: '800px 0px' },
 		);

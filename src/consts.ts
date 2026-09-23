@@ -23,7 +23,9 @@ export const SPOTIFY_PLAYLIST_ID = '7GEp5YWw0OKbn5kftEKj7a';
 // Formspree handles the contact form — the site is static and has no server of
 // its own. The endpoint is public by design; it only accepts mail addressed here.
 export const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mvzqanno';
-export const CALENDLY_URL = 'https://calendly.com/joela1031/new-meeting';
+// Cal.com: the event's link (for the embed) and its page (for plain links).
+export const CAL_LINK = 'joel-acosta-ozk5ha/30min';
+export const CAL_URL = `https://cal.com/${CAL_LINK}`;
 
 // Also serve as `sameAs` in the Person schema — the link between this domain and
 // the profiles search engines already trust.

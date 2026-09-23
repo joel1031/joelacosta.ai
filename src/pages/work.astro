@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import PersonSchema from '../components/PersonSchema.astro';
-import { CALENDLY_URL, FORMSPREE_ENDPOINT, SOCIALS } from '../consts';
+import { CAL_URL, FORMSPREE_ENDPOINT, SOCIALS } from '../consts';
 import { getVisible, showingDrafts } from '../collections';
 
 const projects = (await getVisible('projects')).sort(
@@ -26,7 +26,7 @@ const projects = (await getVisible('projects')).sort(
 		<section class="contact">
 			<h2 class="word heading">contact</h2>
 			<p class="lede">
-				<a class="link" href={CALENDLY_URL} target="_blank" rel="noopener">book a call</a>, or send a
+				<a class="link" href={CAL_URL} target="_blank" rel="noopener">book a call</a>, or send a
 				note.
 			</p>
 			<form id="contact-form" action={FORMSPREE_ENDPOINT} method="POST">

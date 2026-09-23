@@ -38,15 +38,16 @@ const {
 		<slot />
 		{footer && <Footer />}
 		<script>
-			import { CALENDLY_URL } from '../consts';
-			import { openCalendly } from '../scripts/calendly';
+			import { CAL_LINK } from '../consts';
+			import { openCal } from '../scripts/cal';
 
-			// Book a call opens Calendly over the page. Delegated, so it survives page swaps.
+			// Book a call opens the Cal.com calendar over the page. Delegated, so it survives
+			// page swaps.
 			document.addEventListener('click', (e) => {
-				const el = e.target instanceof Element ? e.target.closest('[data-calendly]') : null;
+				const el = e.target instanceof Element ? e.target.closest('[data-book]') : null;
 				if (!el) return;
 				e.preventDefault();
-				openCalendly(CALENDLY_URL);
+				openCal(CAL_LINK);
 			});
 		</script>
 		<script is:inline>
